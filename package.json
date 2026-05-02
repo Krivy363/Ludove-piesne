@@ -2,7 +2,7 @@
   "license": "0BSD",
   "main": "index.js",
   "scripts": {
-    "build": "expo export:web"
+    "build": "expo export:web",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
