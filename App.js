@@ -8,19 +8,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // --- IMPORT DÁT ---
-// Uisti sa, že súbor songs.js existuje a exportuje pesnickyData
 import { pesnickyData } from './songs'; 
 
 const Tab = createBottomTabNavigator();
 
 // --- POMOCNÉ FUNKCIE ---
 const bezDiakritiky = (str) => {
-  return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+  return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
 };
 
 // --- KOMPONENTY ---
 
-// Memoizovaný riadok zoznamu pre vysoký výkon
 const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
   <TouchableOpacity 
     style={[styles.songCard, { backgroundColor: theme.card }]} 
@@ -34,7 +32,6 @@ const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
   </TouchableOpacity>
 ));
 
-// Samostatný komponent pre detail piesne
 const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fontSize, setFontSize }) => {
   if (!vybrana) return null;
   return (
@@ -72,9 +69,16 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
   const [search, setSearch] = useState('');
   
   const filtered = useMemo(() => {
-    const searchNormalized = bezDiakritiky(search.toLowerCase());
+    const term = bezDiakritiky(search);
+    
     return data
-      .filter(p => p.nazov && bezDiakritiky(p.nazov.toLowerCase()).includes(searchNormalized))
+      .filter(p => {
+        if (!term) return true;
+        // Hľadáme v názve ALEBO v texte piesne
+        const vNazve = bezDiakritiky(p.nazov).includes(term);
+        const vTexte = bezDiakritiky(p.text).includes(term);
+        return vNazve || vTexte;
+      })
       .sort((a, b) => a.nazov.localeCompare(b.nazov, 'sk'));
   }, [search, data]);
 
@@ -88,10 +92,11 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
       </View>
       <TextInput 
         style={[styles.searchBar, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]} 
-        placeholder="Hľadať pieseň..." 
+        placeholder="Hľadať pieseň alebo text..." 
         placeholderTextColor="#999"
         onChangeText={setSearch}
         value={search}
+        clearButtonMode="while-editing"
       />
       <FlatList
         data={filtered}
@@ -105,7 +110,7 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
             theme={theme} 
           />
         )}
-        ListEmptyComponent={<Text style={styles.emptyText}>Zoznam je prázdny</Text>}
+        ListEmptyComponent={<Text style={styles.emptyText}>Nenašli sa žiadne piesne</Text>}
         initialNumToRender={15}
       />
     </SafeAreaView>
@@ -119,7 +124,6 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // Načítanie obľúbených pri štarte
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -130,7 +134,6 @@ export default function App() {
     loadData();
   }, []);
 
-  // Uloženie obľúbených pri zmene
   useEffect(() => {
     const saveData = async () => {
       try {
@@ -176,8 +179,8 @@ export default function App() {
             height: 65, 
             paddingBottom: 8, 
             paddingTop: 8,
-            marginBottom: 40,
-            marginHorizontal: 45,
+            marginBottom: Platform.OS === 'ios' ? 30 : 20,
+            marginHorizontal: 30,
             borderRadius: 40,
             position: 'absolute',
             elevation: 12,
@@ -193,7 +196,7 @@ export default function App() {
             {() => (
               <ListScreen 
                 data={pesnickyData} 
-                title="Ľudové piesne" 
+                title="Spevník" 
                 theme={theme} 
                 favorites={favorites} 
                 setVybrana={setVybrana}
@@ -242,4 +245,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-
+          
