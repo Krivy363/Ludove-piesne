@@ -8,12 +8,13 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/ikonka.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/ikonka.png"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,7 +26,23 @@
     },
     "web": {
       "favicon": "./assets/ikonka.png",
-      "title": "Ľudové piesne"
+      "title": "Ľudové piesne",
+      "description": "Spevník ľudových piesní",
+      "config": {
+        "pwa": {
+          "manifest": {
+            "name": "Ľudové piesne",
+            "short_name": "Piesne",
+            "icons": [
+              {
+                "src": "./assets/ikonka.png",
+                "sizes": [96, 128, 192, 256, 384, 512],
+                "type": "image/png"
+              }
+            ]
+          }
+        }
+      }
     },
     "extra": {
       "eas": {
@@ -37,3 +54,4 @@
     ]
   }
 }
+
