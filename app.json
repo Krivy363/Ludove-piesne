@@ -4,7 +4,7 @@
     "slug": "snack-5284e497-d564-486f-b15b-0e0ba6fe61db",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/ikonka.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -17,14 +17,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/ikonka.png", 
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.krivy.snack5284e497d564486fb15b0e0ba6fe61db"
+      "package": "com.krivy.ludovepiesne"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/ikonka.png",
+      "title": "Ľudové piesne"
     },
     "extra": {
       "eas": {
