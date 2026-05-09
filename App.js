@@ -192,7 +192,7 @@ export default function App() {
           tabBarActiveTintColor: theme.accent,
           tabBarInactiveTintColor: '#999',
         }}>
-          <Tab.Screen name="Všetky" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
+          <Tab.Screen name="Ľudové piesne" options={{ title: 'Ľudové piesne', tabBarLabel: 'Všetky', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
             {() => (
               <ListScreen 
                 data={pesnickyData} 
