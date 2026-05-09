@@ -196,7 +196,7 @@ export default function App() {
             {() => (
               <ListScreen 
                 data={pesnickyData} 
-                title="Spevník" 
+                title="Ľudové piesne" 
                 theme={theme} 
                 favorites={favorites} 
                 setVybrana={setVybrana}
