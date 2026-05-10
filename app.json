@@ -25,27 +25,9 @@
       "package": "com.krivy.ludovepiesne"
     },
     "web": {
-      "favicon": "./public/icon.png",
+      "favicon": "./assets/icon.png",
       "title": "Ľudové piesne",
-      "description": "Spevník ľudových piesní",
-      "bundler": "metro",
-      "output": "static",
-      "config": {
-        "pwa": {
-          "manifest": {
-            "name": "Ľudové piesne",
-            "short_name": "Piesne",
-            "icons": [
-              {
-                "src": "/icon.png",
-                "sizes": [192, 512],
-                "type": "image/png",
-                "purpose": "any maskable"
-              }
-            ]
-          }
-        }
-      }
+      "bundler": "metro"
     },
     "extra": {
       "eas": {
