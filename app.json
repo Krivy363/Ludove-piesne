@@ -2,34 +2,47 @@
   "expo": {
     "name": "Ľudové piesne",
     "slug": "snack-5284e497-d564-486f-b15b-0e0ba6fe61db",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/ikonka.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/logo.png",
+      "image": "./assets/ikonka.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/logo.png"
+      "icon": "./assets/ikonka.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.png", 
+        "foregroundImage": "./assets/ikonka.png", 
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.krivy.ludovepiesne"
     },
     "web": {
-      "favicon": "./assets/logo.png",
+      "favicon": "./assets/ikonka.png",
       "title": "Ľudové piesne",
-      "bundler": "metro",
-      "display": "standalone",
-      "description": "Spevník slovenských ľudových piesní"
+      "description": "Spevník ľudových piesní",
+      "config": {
+        "pwa": {
+          "manifest": {
+            "name": "Ľudové piesne",
+            "short_name": "Piesne",
+            "icons": [
+              {
+                "src": "./assets/ikonka.png",
+                "sizes": [96, 128, 192, 256, 384, 512],
+                "type": "image/png"
+              }
+            ]
+          }
+        }
+      }
     },
     "extra": {
       "eas": {
