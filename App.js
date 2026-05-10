@@ -74,7 +74,6 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
     return data
       .filter(p => {
         if (!term) return true;
-        // Hľadáme v názve ALEBO v texte piesne
         const vNazve = bezDiakritiky(p.nazov).includes(term);
         const vTexte = bezDiakritiky(p.text).includes(term);
         return vNazve || vTexte;
@@ -123,6 +122,20 @@ export default function App() {
   const [favorites, setFavorites] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
+
+  // NASTAVENIE TITULKU A OSTRREJ IKONY PRE WEB
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      document.title = "Ľudové piesne"; // Nastaví správny názov karty v prehliadači
+      
+      // Vynútenie ostrej ikony pre pridanie na plochu
+      const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+      link.type = 'image/png';
+      link.rel = 'apple-touch-icon'; 
+      link.href = './assets/icon.png';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -245,4 +258,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-          
+        
