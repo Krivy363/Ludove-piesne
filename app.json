@@ -4,28 +4,28 @@
     "slug": "snack-5284e497-d564-486f-b15b-0e0ba6fe61db",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/ikonka.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/ikonka.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/ikonka.png"
+      "icon": "./assets/icon.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/ikonka.png", 
+        "foregroundImage": "./assets/icon.png", 
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.krivy.ludovepiesne"
     },
     "web": {
-      "favicon": "./assets/ikonka.png",
+      "favicon": "./assets/icon.png",
       "title": "Ľudové piesne",
       "description": "Spevník ľudových piesní",
       "config": {
@@ -35,7 +35,7 @@
             "short_name": "Piesne",
             "icons": [
               {
-                "src": "./assets/ikonka.png",
+                "src": "./assets/icon.png",
                 "sizes": [96, 128, 192, 256, 384, 512],
                 "type": "image/png"
               }
