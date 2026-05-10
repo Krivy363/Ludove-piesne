@@ -9,7 +9,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // --- IMPORT DÁT A IKONY ---
 import { pesnickyData } from './songs'; 
-// Importujeme ikonu priamo, aby ju Expo správne spracovalo pri builde
+// Importujeme ikonu priamo z assets, kde ju už máš nahratú
 import MojaIkona from './assets/icon.png';
 
 const Tab = createBottomTabNavigator();
@@ -125,25 +125,26 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // --- FINÁLNA OPRAVA IKONY PRE WEB ---
+  // --- NASTAVENIE METADÁT PRE WEB ---
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
       
-      // Cache buster s verziou, aby sa premazala stará zemeguľa v cache telefónu
-      const iconUrl = `${MojaIkona}?v=3`;
+      // Expo spracuje import a vytvorí správnu URL adresu
+      const iconUrl = MojaIkona;
 
+      // Vymažeme staré linky, aby neprekážali
       const links = document.querySelectorAll("link[rel*='icon']");
       links.forEach(l => l.remove());
 
-      // 1. Ikona pre kartu prehliadača
+      // Pridáme link na ikonu pre prehliadač
       const link = document.createElement('link');
       link.rel = 'icon';
       link.type = 'image/png';
       link.href = iconUrl;
       document.head.appendChild(link);
 
-      // 2. Ikona pre pridanie na plochu
+      // Pridáme link pre Apple zariadenia (Add to Home Screen)
       const appleLink = document.createElement('link');
       appleLink.rel = 'apple-touch-icon';
       appleLink.href = iconUrl;
@@ -272,4 +273,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-  
+    
