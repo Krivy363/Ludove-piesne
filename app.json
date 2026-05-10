@@ -19,7 +19,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png", 
-        "backgroundColor": "#4a2c1a"
+        "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.krivy.ludovepiesne"
@@ -27,7 +27,9 @@
     "web": {
       "favicon": "./assets/icon.png",
       "title": "Ľudové piesne",
-      "bundler": "metro"
+      "bundler": "metro",
+      "display": "standalone",
+      "description": "Spevník slovenských ľudových piesní"
     },
     "extra": {
       "eas": {
