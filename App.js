@@ -123,28 +123,26 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // --- FINÁLNA OPRAVA IKONY A TITULKU ---
+  // --- OPRAVA IKONY A TITULKU PRE WEB ---
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
       
-      // Cache buster - prinúti prehliadač ignorovať starú rozmazanú ikonu
-      const verzia = new Date().getTime(); 
-      const iconUrl = `/icon.png?v=${verzia}`;
+      // Použitie absolútnej cesty k tvojej ostrej ikone z priečinka public
+      const iconUrl = "https://ludovepiesne.vercel.app/icon.png";
 
-      // Vyčistíme staré linky
+      // Vyčistenie starých meta dát
       const links = document.querySelectorAll("link[rel*='icon']");
       links.forEach(l => l.remove());
 
-      // 1. Hlavná ikona pre Chrome/Android
+      // 1. Štandardná favicon (pre kartu prehliadača)
       const link = document.createElement('link');
       link.rel = 'icon';
       link.type = 'image/png';
-      link.sizes = '512x512';
       link.href = iconUrl;
       document.head.appendChild(link);
 
-      // 2. Ikona pre pridanie na plochu (Apple/Android)
+      // 2. Apple Touch Icon (pre pridanie na plochu)
       const appleLink = document.createElement('link');
       appleLink.rel = 'apple-touch-icon';
       appleLink.href = iconUrl;
@@ -273,4 +271,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-                  
+              
