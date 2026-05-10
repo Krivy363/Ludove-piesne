@@ -123,24 +123,27 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // NASTAVENIE TITULKU A OSTRREJ IKONY PRE WEB
+  // --- OPRAVA IKONY A TITULKU ---
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
       
-      // 1. Ikona pre iOS a mobilné prehliadače (vysoká kvalita)
-      const appleIcon = document.querySelector("link[rel='apple-touch-icon']") || document.createElement('link');
-      appleIcon.rel = 'apple-touch-icon';
-      appleIcon.href = './assets/icon.png';
-      document.getElementsByTagName('head')[0].appendChild(appleIcon);
+      // Vyčistíme staré linky, aby neostala žiadna rozmazaná stopa
+      const links = document.querySelectorAll("link[rel*='icon']");
+      links.forEach(l => l.remove());
 
-      // 2. Ikona pre Android/Chrome plochu (vynútenie rozlíšenia)
-      const favIcon = document.querySelector("link[rel='icon']") || document.createElement('link');
-      favIcon.rel = 'icon';
-      favIcon.type = 'image/png';
-      favIcon.sizes = '512x512'; 
-      favIcon.href = './assets/icon.png';
-      document.getElementsByTagName('head')[0].appendChild(favIcon);
+      // Vytvoríme novú čistú cestu k ikone v priečinku public
+      const link = document.createElement('link');
+      link.rel = 'icon';
+      link.type = 'image/png';
+      link.sizes = '512x512';
+      link.href = '/icon.png'; // Súbor musí byť nahratý v priečinku public
+      document.head.appendChild(link);
+
+      const appleLink = document.createElement('link');
+      appleLink.rel = 'apple-touch-icon';
+      appleLink.href = '/icon.png';
+      document.head.appendChild(appleLink);
     }
   }, []);
 
@@ -265,3 +268,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
+          
