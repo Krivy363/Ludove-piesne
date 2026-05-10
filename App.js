@@ -7,10 +7,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// --- IMPORT DÁT A IKONY ---
+// --- IMPORT DÁT ---
 import { pesnickyData } from './songs'; 
-// Importujeme ikonu priamo z assets, kde ju už máš nahratú
-import MojaIkona from './assets/icon.png';
 
 const Tab = createBottomTabNavigator();
 
@@ -125,26 +123,28 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // --- NASTAVENIE METADÁT PRE WEB ---
+  // --- FINÁLNE RIEŠENIE IKONY PRE WEB ---
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
       
-      // Expo spracuje import a vytvorí správnu URL adresu
-      const iconUrl = MojaIkona;
+      // Priamy odkaz na surový súbor na tvojom GitHub repository
+      // Týmto obídeme 404 chybu na Verceli a cache v tvojom mobile
+      const verzia = new Date().getTime();
+      const iconUrl = `https://raw.githubusercontent.com/Krivy363/Ludove-piesne/main/assets/icon.png?v=${verzia}`;
 
-      // Vymažeme staré linky, aby neprekážali
+      // Odstránime staré nefunkčné ikony
       const links = document.querySelectorAll("link[rel*='icon']");
       links.forEach(l => l.remove());
 
-      // Pridáme link na ikonu pre prehliadač
+      // Nastavíme novú favicon (pre kartu prehliadača)
       const link = document.createElement('link');
       link.rel = 'icon';
       link.type = 'image/png';
       link.href = iconUrl;
       document.head.appendChild(link);
 
-      // Pridáme link pre Apple zariadenia (Add to Home Screen)
+      // Nastavíme Apple Touch Icon (pre pridanie na plochu)
       const appleLink = document.createElement('link');
       appleLink.rel = 'apple-touch-icon';
       appleLink.href = iconUrl;
@@ -273,4 +273,3 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-    
