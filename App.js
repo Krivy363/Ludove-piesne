@@ -123,32 +123,33 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // --- DRASTICKÁ OPRAVA IKONY ---
+  // --- NASTAVENIE METADÁT A IKONY PRE WEB ---
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
-      
-      // Sťahujeme priamo z tvojho GitHubu, aby sme obišli 404 chybu na Verceli
-      // Každých 10 minút sa vygeneruje nová URL, aby sme prebili cache v mobile
-      const cacheBuster = Math.floor(Date.now() / 600000);
-      const iconUrl = `https://raw.githubusercontent.com/Krivy363/Ludove-piesne/main/assets/icon.png?v=${cacheBuster}`;
+      const iconUrl = "https://ludovepiesne.vercel.app/icon.png?v=5"; // Navýšená verzia pre prebitie cache
 
-      // 1. Vyčisti staré linky
-      const links = document.querySelectorAll("link[rel*='icon']");
+      // Vyčistenie starých linkov
+      const links = document.querySelectorAll("link[rel*='icon'], link[rel*='apple-touch-icon']");
       links.forEach(l => l.remove());
 
-      // 2. Pridaj novú Favicon
+      // 1. Štandardná ikona (pre kartu prehliadača)
       const link = document.createElement('link');
       link.rel = 'icon';
-      link.type = 'image/png';
       link.href = iconUrl;
       document.head.appendChild(link);
 
-      // 3. Pridaj novú Apple Touch Icon (pre plochu)
+      // 2. Apple/Android plocha ikona
       const appleLink = document.createElement('link');
       appleLink.rel = 'apple-touch-icon';
       appleLink.href = iconUrl;
       document.head.appendChild(appleLink);
+
+      // 3. Špeciálne pre Android Chrome (pomáha pri pridávaní na plochu)
+      const metaMobile = document.createElement('meta');
+      metaMobile.name = 'mobile-web-app-capable';
+      metaMobile.content = 'yes';
+      document.head.appendChild(metaMobile);
     }
   }, []);
 
@@ -273,4 +274,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-    
+                                           
