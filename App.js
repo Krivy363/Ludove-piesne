@@ -123,26 +123,31 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // --- OPRAVA IKONY A TITULKU ---
+  // --- FINÁLNA OPRAVA IKONY A TITULKU ---
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
       
-      // Vyčistíme staré linky, aby neostala žiadna rozmazaná stopa
+      // Cache buster - prinúti prehliadač ignorovať starú rozmazanú ikonu
+      const verzia = new Date().getTime(); 
+      const iconUrl = `/icon.png?v=${verzia}`;
+
+      // Vyčistíme staré linky
       const links = document.querySelectorAll("link[rel*='icon']");
       links.forEach(l => l.remove());
 
-      // Vytvoríme novú čistú cestu k ikone v priečinku public
+      // 1. Hlavná ikona pre Chrome/Android
       const link = document.createElement('link');
       link.rel = 'icon';
       link.type = 'image/png';
       link.sizes = '512x512';
-      link.href = '/icon.png'; // Súbor musí byť nahratý v priečinku public
+      link.href = iconUrl;
       document.head.appendChild(link);
 
+      // 2. Ikona pre pridanie na plochu (Apple/Android)
       const appleLink = document.createElement('link');
       appleLink.rel = 'apple-touch-icon';
-      appleLink.href = '/icon.png';
+      appleLink.href = iconUrl;
       document.head.appendChild(appleLink);
     }
   }, []);
@@ -268,4 +273,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-          
+                  
