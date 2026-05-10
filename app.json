@@ -19,16 +19,17 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png", 
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#4a2c1a"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.krivy.ludovepiesne"
     },
     "web": {
-      "favicon": "./assets/icon.png",
+      "favicon": "./public/icon.png",
       "title": "Ľudové piesne",
       "description": "Spevník ľudových piesní",
       "bundler": "metro",
+      "output": "static",
       "config": {
         "pwa": {
           "manifest": {
@@ -36,9 +37,10 @@
             "short_name": "Piesne",
             "icons": [
               {
-                "src": "./assets/icon.png",
-                "sizes": [96, 128, 192, 256, 384, 512],
-                "type": "image/png"
+                "src": "/icon.png",
+                "sizes": [192, 512],
+                "type": "image/png",
+                "purpose": "any maskable"
               }
             ]
           }
