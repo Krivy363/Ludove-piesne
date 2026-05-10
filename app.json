@@ -2,7 +2,7 @@
   "expo": {
     "name": "Ľudové piesne",
     "slug": "snack-5284e497-d564-486f-b15b-0e0ba6fe61db",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -28,6 +28,7 @@
       "favicon": "./assets/icon.png",
       "title": "Ľudové piesne",
       "description": "Spevník ľudových piesní",
+      "bundler": "metro",
       "config": {
         "pwa": {
           "manifest": {
@@ -54,4 +55,3 @@
     ]
   }
 }
-
