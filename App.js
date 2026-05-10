@@ -7,8 +7,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// --- IMPORT DÁT ---
+// --- IMPORT DÁT A IKONY ---
 import { pesnickyData } from './songs'; 
+// Importujeme ikonu priamo, aby ju Expo správne spracovalo pri builde
+import MojaIkona from './assets/icon.png';
 
 const Tab = createBottomTabNavigator();
 
@@ -123,26 +125,25 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // --- OPRAVA IKONY A TITULKU PRE WEB ---
+  // --- FINÁLNA OPRAVA IKONY PRE WEB ---
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
       
-      // Použitie absolútnej cesty k tvojej ostrej ikone z priečinka public
-      const iconUrl = "https://ludovepiesne.vercel.app/icon.png";
+      // Cache buster s verziou, aby sa premazala stará zemeguľa v cache telefónu
+      const iconUrl = `${MojaIkona}?v=3`;
 
-      // Vyčistenie starých meta dát
       const links = document.querySelectorAll("link[rel*='icon']");
       links.forEach(l => l.remove());
 
-      // 1. Štandardná favicon (pre kartu prehliadača)
+      // 1. Ikona pre kartu prehliadača
       const link = document.createElement('link');
       link.rel = 'icon';
       link.type = 'image/png';
       link.href = iconUrl;
       document.head.appendChild(link);
 
-      // 2. Apple Touch Icon (pre pridanie na plochu)
+      // 2. Ikona pre pridanie na plochu
       const appleLink = document.createElement('link');
       appleLink.rel = 'apple-touch-icon';
       appleLink.href = iconUrl;
@@ -271,4 +272,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-              
+  
