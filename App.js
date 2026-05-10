@@ -126,14 +126,21 @@ export default function App() {
   // NASTAVENIE TITULKU A OSTRREJ IKONY PRE WEB
   useEffect(() => {
     if (Platform.OS === 'web') {
-      document.title = "Ľudové piesne"; // Nastaví správny názov karty v prehliadači
+      document.title = "Ľudové piesne";
       
-      // Vynútenie ostrej ikony pre pridanie na plochu
-      const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-      link.type = 'image/png';
-      link.rel = 'apple-touch-icon'; 
-      link.href = './assets/icon.png';
-      document.getElementsByTagName('head')[0].appendChild(link);
+      // 1. Ikona pre iOS a mobilné prehliadače (vysoká kvalita)
+      const appleIcon = document.querySelector("link[rel='apple-touch-icon']") || document.createElement('link');
+      appleIcon.rel = 'apple-touch-icon';
+      appleIcon.href = './assets/icon.png';
+      document.getElementsByTagName('head')[0].appendChild(appleIcon);
+
+      // 2. Ikona pre Android/Chrome plochu (vynútenie rozlíšenia)
+      const favIcon = document.querySelector("link[rel='icon']") || document.createElement('link');
+      favIcon.rel = 'icon';
+      favIcon.type = 'image/png';
+      favIcon.sizes = '512x512'; 
+      favIcon.href = './assets/icon.png';
+      document.getElementsByTagName('head')[0].appendChild(favIcon);
     }
   }, []);
 
@@ -258,4 +265,3 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-        
