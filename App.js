@@ -127,7 +127,7 @@ export default function App() {
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
-      const iconUrl = "https://ludovepiesne.vercel.app/ikonka.png"; // Navýšená verzia pre prebitie cache
+      const iconUrl = "https://ludovepiesne.vercel.app/logo.png?v=5"; // Navýšená verzia pre prebitie cache
 
       // Vyčistenie starých linkov
       const links = document.querySelectorAll("link[rel*='icon'], link[rel*='apple-touch-icon']");
