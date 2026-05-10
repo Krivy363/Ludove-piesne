@@ -29,7 +29,6 @@
       "title": "Ľudové piesne",
       "description": "Spevník ľudových piesní",
       "bundler": "metro",
-      "output": "static",
       "config": {
         "pwa": {
           "manifest": {
