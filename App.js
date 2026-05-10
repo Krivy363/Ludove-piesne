@@ -123,28 +123,28 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // --- FINÁLNE RIEŠENIE IKONY PRE WEB ---
+  // --- DRASTICKÁ OPRAVA IKONY ---
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
       
-      // Priamy odkaz na surový súbor na tvojom GitHub repository
-      // Týmto obídeme 404 chybu na Verceli a cache v tvojom mobile
-      const verzia = new Date().getTime();
-      const iconUrl = `https://raw.githubusercontent.com/Krivy363/Ludove-piesne/main/assets/icon.png?v=${verzia}`;
+      // Sťahujeme priamo z tvojho GitHubu, aby sme obišli 404 chybu na Verceli
+      // Každých 10 minút sa vygeneruje nová URL, aby sme prebili cache v mobile
+      const cacheBuster = Math.floor(Date.now() / 600000);
+      const iconUrl = `https://raw.githubusercontent.com/Krivy363/Ludove-piesne/main/assets/icon.png?v=${cacheBuster}`;
 
-      // Odstránime staré nefunkčné ikony
+      // 1. Vyčisti staré linky
       const links = document.querySelectorAll("link[rel*='icon']");
       links.forEach(l => l.remove());
 
-      // Nastavíme novú favicon (pre kartu prehliadača)
+      // 2. Pridaj novú Favicon
       const link = document.createElement('link');
       link.rel = 'icon';
       link.type = 'image/png';
       link.href = iconUrl;
       document.head.appendChild(link);
 
-      // Nastavíme Apple Touch Icon (pre pridanie na plochu)
+      // 3. Pridaj novú Apple Touch Icon (pre plochu)
       const appleLink = document.createElement('link');
       appleLink.rel = 'apple-touch-icon';
       appleLink.href = iconUrl;
@@ -273,3 +273,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
+    
