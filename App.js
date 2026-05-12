@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { 
   StyleSheet, Text, View, FlatList, TextInput, 
-  TouchableOpacity, ScrollView, SafeAreaView, StatusBar, Platform 
+  TouchableOpacity, ScrollView, SafeAreaView, StatusBar, Platform, BackHandler
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
@@ -123,33 +123,56 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // --- NASTAVENIE METADÁT A IKONY PRE WEB ---
+  // --- LOGIKA PRE TLAČIDLO SPÄŤ (WEB AJ ANDROID) ---
+  useEffect(() => {
+    if (vybrana) {
+      // Keď otvoríme detail, pridáme stav do histórie prehliadača
+      if (Platform.OS === 'web') {
+        window.history.pushState({ detailOpen: true }, '');
+      }
+
+      // Pre Android (ak by si to niekedy balil ako appku)
+      const backAction = () => {
+        setVybrana(null);
+        return true;
+      };
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+      // Pre Web: počúvame na stlačenie šípky späť v prehliadači
+      const handleWebBack = () => {
+        setVybrana(null);
+      };
+      if (Platform.OS === 'web') {
+        window.addEventListener('popstate', handleWebBack);
+      }
+
+      return () => {
+        backHandler.remove();
+        if (Platform.OS === 'web') {
+          window.removeEventListener('popstate', handleWebBack);
+        }
+      };
+    }
+  }, [vybrana]);
+
+  // --- NASTAVENIE IKONY A TITULKU ---
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
-      const iconUrl = "https://ludovepiesne.vercel.app/logo.png"; // Navýšená verzia pre prebitie cache
+      const iconUrl = "https://ludovepiesne.vercel.app/assets/logo.png"; // Používame už logo.png
 
-      // Vyčistenie starých linkov
       const links = document.querySelectorAll("link[rel*='icon'], link[rel*='apple-touch-icon']");
       links.forEach(l => l.remove());
 
-      // 1. Štandardná ikona (pre kartu prehliadača)
       const link = document.createElement('link');
       link.rel = 'icon';
       link.href = iconUrl;
       document.head.appendChild(link);
 
-      // 2. Apple/Android plocha ikona
       const appleLink = document.createElement('link');
       appleLink.rel = 'apple-touch-icon';
       appleLink.href = iconUrl;
       document.head.appendChild(appleLink);
-
-      // 3. Špeciálne pre Android Chrome (pomáha pri pridávaní na plochu)
-      const metaMobile = document.createElement('meta');
-      metaMobile.name = 'mobile-web-app-capable';
-      metaMobile.content = 'yes';
-      document.head.appendChild(metaMobile);
     }
   }, []);
 
@@ -274,4 +297,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-                                           
+      
