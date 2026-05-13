@@ -159,7 +159,7 @@ export default function App() {
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
-      const iconUrl = "https://ludovepiesne.vercel.app/logo.png"; // Používame už logo.png
+      const iconUrl = "[https://ludovepiesne.vercel.app/logo.png](https://ludovepiesne.vercel.app/logo.png)"; // Používame už logo.png
 
       const links = document.querySelectorAll("link[rel*='icon'], link[rel*='apple-touch-icon']");
       links.forEach(l => l.remove());
