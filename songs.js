@@ -1092,7 +1092,7 @@ R: Očko mala len jedno, aj na tom mala beľmo, vlasy mala sivé, nohy mala kriv
 
 3. Ach Bože prebože, už som dolietala už som svoje drobne [:deti dochovala.:]
 
-4. Moje drobné deti na kamenci sediabystrú vodu piju [:drobný piesok jedia.:]`
+4. Moje drobné deti na kamenci sedia bystrú vodu piju [:drobný piesok jedia.:]`
   },
   {
     id: '104',
