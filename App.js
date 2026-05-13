@@ -54,7 +54,7 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
           <TouchableOpacity onPress={() => setVybrana(null)} style={styles.backButton}>
             <Text style={[styles.backText, { color: theme.accent }]}>← Späť</Text>
           </TouchableOpacity>
-          <View style={styles.rightControls}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {vybrana && (
               <TouchableOpacity onPress={() => toggleFavorite(vybrana.id)}>
                 <Text style={{ fontSize: 24 }}>{favorites.includes(vybrana.id) ? '❤️' : '🤍'}</Text>
@@ -66,7 +66,7 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
             <TouchableOpacity onPress={() => setFontSize(f => Math.min(45, f + 2))} style={[styles.zoomBtn, {backgroundColor: theme.btnBg}]}>
               <Text style={{color: theme.accent, fontWeight: 'bold'}}>A+</Text>
             </TouchableOpacity>
-          </View>
+          </div>
         </View>
         <ScrollView contentContainerStyle={[styles.scrollContent, { paddingHorizontal: 20 }]}>
           {vybrana && (
@@ -97,9 +97,15 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
+      {/* HLAVIČKA S VYCENTROVANÝM NÁZVOM A POSUNUTÝM PREPÍNAČOM */}
       <View style={styles.mainHeader}>
-        <Text style={[styles.title, { color: theme.accent }]}>{title}</Text>
-        <TouchableOpacity onPress={() => setIsDarkMode(!isDarkMode)}>
+        <View style={styles.titleWrapper}>
+          <Text style={[styles.title, { color: theme.accent }]}>{title}</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.modeToggle} 
+          onPress={() => setIsDarkMode(!isDarkMode)}
+        >
           <Text style={{ fontSize: 24 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
         </TouchableOpacity>
       </View>
@@ -138,7 +144,6 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // Web konfigurácia a písmo
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
@@ -203,8 +208,26 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20 },
-  mainHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: Platform.OS === 'ios' ? 10 : 40, marginBottom: 5 },
-  title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
+  mainHeader: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    marginTop: Platform.OS === 'ios' ? 10 : 40, 
+    marginBottom: 5,
+    position: 'relative',
+    minHeight: 50
+  },
+  titleWrapper: { flex: 1, alignItems: 'center' },
+  title: { 
+    fontSize: 34, 
+    fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif',
+    textAlign: 'center' 
+  },
+  modeToggle: { 
+    position: 'absolute', 
+    right: 5, // Jemný odstup od pravého okraja kontajnera
+    padding: 10 
+  },
   quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15 },
   quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', lineHeight: 22, opacity: 0.8 },
   searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16 },
@@ -216,12 +239,12 @@ const styles = StyleSheet.create({
   headerControls: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
   backButton: { paddingRight: 20, paddingVertical: 10 },
   backText: { fontSize: 18, fontWeight: 'bold' },
-  rightControls: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  zoomBtn: { padding: 10, borderRadius: 10, minWidth: 42, alignItems: 'center' },
+  rightControls: { flexDirection: 'row', alignItems: 'center' },
+  zoomBtn: { padding: 10, borderRadius: 10, minWidth: 42, alignItems: 'center', marginLeft: 8 },
   detailCard: { borderRadius: 20, padding: 25, elevation: 3, marginTop: 10 },
   detailNazov: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   detailText: { lineHeight: 32, textAlign: 'center' },
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-      
+                                         
