@@ -39,34 +39,16 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
 
   useEffect(() => {
     if (vybrana) {
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-        friction: 8,
-        tension: 40,
-      }).start();
+      Animated.spring(slideAnim, { toValue: 0, useNativeDriver: true, friction: 8, tension: 40 }).start();
     } else {
-      Animated.timing(slideAnim, {
-        toValue: screenHeight,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
+      Animated.timing(slideAnim, { toValue: screenHeight, duration: 300, useNativeDriver: true }).start();
     }
   }, [vybrana]);
 
   if (!vybrana && slideAnim._value === screenHeight) return null;
 
   return (
-    <Animated.View 
-      style={[
-        StyleSheet.absoluteFill, 
-        { 
-          backgroundColor: theme.bg, 
-          zIndex: 9999,
-          transform: [{ translateY: slideAnim }] 
-        }
-      ]}
-    >
+    <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: theme.bg, zIndex: 9999, transform: [{ translateY: slideAnim }] }]}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={[styles.headerControls, { borderBottomColor: theme.border, paddingHorizontal: 20 }]}>
           <TouchableOpacity onPress={() => setVybrana(null)} style={styles.backButton}>
@@ -108,9 +90,7 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
     return data
       .filter(p => {
         if (!term) return true;
-        const vNazve = bezDiakritiky(p.nazov).includes(term);
-        const vTexte = bezDiakritiky(p.text).includes(term);
-        return vNazve || vTexte;
+        return bezDiakritiky(p.nazov).includes(term) || bezDiakritiky(p.text).includes(term);
       })
       .sort((a, b) => a.nazov.localeCompare(b.nazov, 'sk'));
   }, [search, data]);
@@ -124,7 +104,6 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
         </TouchableOpacity>
       </View>
 
-      {/* --- CITÁT NA VRCHU --- */}
       <View style={styles.quoteContainer}>
         <Text style={[styles.quoteText, { color: theme.accent }]}>
           „Kde sa spievajú ľudové piesne, tam žijú tradície.“
@@ -144,15 +123,9 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={{ paddingBottom: 150 }} 
         renderItem={({ item }) => (
-          <SongItem 
-            item={item} 
-            isFavorite={favorites.includes(item.id)} 
-            onPress={setVybrana} 
-            theme={theme} 
-          />
+          <SongItem item={item} isFavorite={favorites.includes(item.id)} onPress={setVybrana} theme={theme} />
         )}
         ListEmptyComponent={<Text style={styles.emptyText}>Nenašli sa žiadne piesne</Text>}
-        initialNumToRender={15}
       />
     </SafeAreaView>
   );
@@ -165,85 +138,27 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  useEffect(() => {
-    if (vybrana) {
-      if (Platform.OS === 'web') {
-        window.history.pushState({ detailOpen: true }, '');
-      }
-      const backAction = () => {
-        setVybrana(null);
-        return true;
-      };
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-      const handleWebBack = () => {
-        setVybrana(null);
-      };
-      if (Platform.OS === 'web') {
-        window.addEventListener('popstate', handleWebBack);
-      }
-      return () => {
-        backHandler.remove();
-        if (Platform.OS === 'web') {
-          window.removeEventListener('popstate', handleWebBack);
-        }
-      };
-    }
-  }, [vybrana]);
-
+  // Web konfigurácia a písmo
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
-      
-      // --- NAČÍTANIE PÍSMA PRE CITÁT ---
       const fontLink = document.createElement('link');
       fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap';
       fontLink.rel = 'stylesheet';
       document.head.appendChild(fontLink);
-
-      const iconUrl = "https://ludovepiesne.vercel.app/logo.png"; 
-
-      const links = document.querySelectorAll("link[rel*='icon'], link[rel*='apple-touch-icon']");
-      links.forEach(l => l.remove());
-
-      const link = document.createElement('link');
-      link.rel = 'icon';
-      link.href = iconUrl;
-      document.head.appendChild(link);
-
-      const appleLink = document.createElement('link');
-      appleLink.rel = 'apple-touch-icon';
-      appleLink.href = iconUrl;
-      document.head.appendChild(appleLink);
-      
-      const metaMobile = document.createElement('meta');
-      metaMobile.name = 'mobile-web-app-capable';
-      metaMobile.content = 'yes';
-      document.head.appendChild(metaMobile);
-      
-      const manifestLink = document.createElement('link');
-      manifestLink.rel = 'manifest';
-      manifestLink.href = '/manifest.json';
-      document.head.appendChild(manifestLink);
     }
   }, []);
 
   useEffect(() => {
     const loadData = async () => {
-      try {
-        const saved = await AsyncStorage.getItem('@moje_srdiecka');
-        if (saved) setFavorites(JSON.parse(saved));
-      } catch (e) { console.log("Chyba načítania", e); }
+      const saved = await AsyncStorage.getItem('@moje_srdiecka');
+      if (saved) setFavorites(JSON.parse(saved));
     };
     loadData();
   }, []);
 
   useEffect(() => {
-    const saveData = async () => {
-      try {
-        await AsyncStorage.setItem('@moje_srdiecka', JSON.stringify(favorites));
-      } catch (e) { console.log("Chyba ukladania", e); }
-    };
-    saveData();
+    AsyncStorage.setItem('@moje_srdiecka', JSON.stringify(favorites));
   }, [favorites]);
 
   const toggleFavorite = useCallback((id) => {
@@ -263,63 +178,22 @@ export default function App() {
     <NavigationContainer>
       <View style={{ flex: 1, backgroundColor: theme.bg }}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        
-        <DetailView 
-          vybrana={vybrana} 
-          setVybrana={setVybrana} 
-          theme={theme} 
-          favorites={favorites} 
-          toggleFavorite={toggleFavorite}
-          fontSize={fontSize}
-          setFontSize={setFontSize}
-        />
+        <DetailView vybrana={vybrana} setVybrana={setVybrana} theme={theme} favorites={favorites} toggleFavorite={toggleFavorite} fontSize={fontSize} setFontSize={setFontSize}/>
 
         <Tab.Navigator screenOptions={{ 
           headerShown: false,
           tabBarStyle: { 
-            backgroundColor: theme.card, 
-            borderTopColor: 'transparent',
-            height: 65, 
-            paddingBottom: 8, 
-            paddingTop: 8,
-            marginBottom: Platform.OS === 'ios' ? 30 : 20,
-            marginHorizontal: 30,
-            borderRadius: 40,
-            position: 'absolute',
-            elevation: 12,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 5 },
-            shadowOpacity: 0.3,
-            shadowRadius: 5,
+            backgroundColor: theme.card, borderTopColor: 'transparent', height: 65, paddingBottom: 8, paddingTop: 8,
+            marginBottom: Platform.OS === 'ios' ? 30 : 20, marginHorizontal: 30, borderRadius: 40, position: 'absolute',
+            elevation: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.3, shadowRadius: 5,
           },
-          tabBarActiveTintColor: theme.accent,
-          tabBarInactiveTintColor: '#999',
+          tabBarActiveTintColor: theme.accent, tabBarInactiveTintColor: '#999',
         }}>
-          <Tab.Screen name="Ľudové piesne" options={{ title: 'Ľudové piesne', tabBarLabel: 'Všetky', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
-            {() => (
-              <ListScreen 
-                data={pesnickyData} 
-                title="Ľudové piesne" 
-                theme={theme} 
-                favorites={favorites} 
-                setVybrana={setVybrana}
-                isDarkMode={isDarkMode}
-                setIsDarkMode={setIsDarkMode}
-              />
-            )}
+          <Tab.Screen name="Všetky" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
+            {() => <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}
           </Tab.Screen>
           <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
-            {() => (
-              <ListScreen 
-                data={pesnickyData.filter(p => favorites.includes(p.id))} 
-                title="Obľúbené" 
-                theme={theme} 
-                favorites={favorites} 
-                setVybrana={setVybrana}
-                isDarkMode={isDarkMode}
-                setIsDarkMode={setIsDarkMode}
-              />
-            )}
+            {() => <ListScreen data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}
           </Tab.Screen>
         </Tab.Navigator>
       </View>
@@ -329,23 +203,10 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20 },
-  mainHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: Platform.OS === 'ios' ? 10 : 40, marginBottom: 10 },
-  title: { fontSize: 28, fontWeight: 'bold' },
-  
-  // ŠTÝLY PRE CITÁT
-  quoteContainer: {
-    paddingVertical: 15,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  quoteText: {
-    fontSize: 18,
-    textAlign: 'center',
-    fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif',
-    lineHeight: 26,
-    opacity: 0.9,
-  },
-
+  mainHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: Platform.OS === 'ios' ? 10 : 40, marginBottom: 5 },
+  title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
+  quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15 },
+  quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', lineHeight: 22, opacity: 0.8 },
   searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16 },
   songCard: { padding: 18, borderRadius: 15, marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2 },
   songRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
@@ -357,10 +218,10 @@ const styles = StyleSheet.create({
   backText: { fontSize: 18, fontWeight: 'bold' },
   rightControls: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   zoomBtn: { padding: 10, borderRadius: 10, minWidth: 42, alignItems: 'center' },
-  detailCard: { borderRadius: 20, padding: 25, elevation: 3, marginTop: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 },
-  detailNazov: { fontSize: 26, fontWeight: 'bold', textAlign: 'center' },
+  detailCard: { borderRadius: 20, padding: 25, elevation: 3, marginTop: 10 },
+  detailNazov: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   detailText: { lineHeight: 32, textAlign: 'center' },
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-              
+      
