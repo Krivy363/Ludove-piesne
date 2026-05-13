@@ -4,28 +4,28 @@
     "slug": "snack-5284e497-d564-486f-b15b-0e0ba6fe61db",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./logo.png",
+    "icon": "./public/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": false,
     "splash": {
-      "image": "./logo.png",
+      "image": "./public/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true,
-      "icon": "./logo.png"
+      "icon": "./public/logo.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./logo.png", 
+        "foregroundImage": "./public/logo.png", 
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.krivy.ludovepiesne"
     },
     "web": {
-      "favicon": "./logo.png",
+      "favicon": "./public/logo.png",
       "title": "Ľudové piesne",
       "bundler": "metro",
       "display": "standalone",
