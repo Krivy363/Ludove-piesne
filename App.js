@@ -54,7 +54,7 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
           <TouchableOpacity onPress={() => setVybrana(null)} style={styles.backButton}>
             <Text style={[styles.backText, { color: theme.accent }]}>← Späť</Text>
           </TouchableOpacity>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <View style={styles.rightControls}>
             {vybrana && (
               <TouchableOpacity onPress={() => toggleFavorite(vybrana.id)}>
                 <Text style={{ fontSize: 24 }}>{favorites.includes(vybrana.id) ? '❤️' : '🤍'}</Text>
@@ -66,7 +66,7 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
             <TouchableOpacity onPress={() => setFontSize(f => Math.min(45, f + 2))} style={[styles.zoomBtn, {backgroundColor: theme.btnBg}]}>
               <Text style={{color: theme.accent, fontWeight: 'bold'}}>A+</Text>
             </TouchableOpacity>
-          </div>
+          </View>
         </View>
         <ScrollView contentContainerStyle={[styles.scrollContent, { paddingHorizontal: 20 }]}>
           {vybrana && (
@@ -97,15 +97,11 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
-      {/* HLAVIČKA S VYCENTROVANÝM NÁZVOM A POSUNUTÝM PREPÍNAČOM */}
       <View style={styles.mainHeader}>
         <View style={styles.titleWrapper}>
           <Text style={[styles.title, { color: theme.accent }]}>{title}</Text>
         </View>
-        <TouchableOpacity 
-          style={styles.modeToggle} 
-          onPress={() => setIsDarkMode(!isDarkMode)}
-        >
+        <TouchableOpacity style={styles.modeToggle} onPress={() => setIsDarkMode(!isDarkMode)}>
           <Text style={{ fontSize: 24 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
         </TouchableOpacity>
       </View>
@@ -144,9 +140,34 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
+  // OPRAVA TLAČIDLA SPÄŤ (Android & Web)
+  useEffect(() => {
+    const backAction = () => {
+      if (vybrana) {
+        setVybrana(null);
+        return true; 
+      }
+      return false; 
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    if (Platform.OS === 'web' && vybrana) {
+      window.history.pushState({ detail: true }, '');
+      const handlePopState = () => setVybrana(null);
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        backHandler.remove();
+        window.removeEventListener('popstate', handlePopState);
+      };
+    }
+
+    return () => backHandler.remove();
+  }, [vybrana]);
+
+  // Web font
   useEffect(() => {
     if (Platform.OS === 'web') {
-      document.title = "Ľudové piesne";
       const fontLink = document.createElement('link');
       fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap';
       fontLink.rel = 'stylesheet';
@@ -209,42 +230,36 @@ export default function App() {
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20 },
   mainHeader: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    marginTop: Platform.OS === 'ios' ? 10 : 40, 
-    marginBottom: 5,
-    position: 'relative',
-    minHeight: 50
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', 
+    marginTop: Platform.OS === 'ios' ? 10 : 40, marginBottom: 5, position: 'relative', minHeight: 50
   },
   titleWrapper: { flex: 1, alignItems: 'center' },
-  title: { 
-    fontSize: 34, 
-    fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif',
-    textAlign: 'center' 
-  },
-  modeToggle: { 
-    position: 'absolute', 
-    right: 5, // Jemný odstup od pravého okraja kontajnera
-    padding: 10 
-  },
+  title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', textAlign: 'center' },
+  modeToggle: { position: 'absolute', right: 5, padding: 10 },
   quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15 },
   quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', lineHeight: 22, opacity: 0.8 },
   searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16 },
   songCard: { padding: 18, borderRadius: 15, marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2 },
   songRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  songTitle: { fontSize: 17, fontWeight: '600' },
+  
+  // TU JE ZMENENÉ PÍSMO PRE ZOZNAM
+  songTitle: { 
+    fontSize: 20, // Trochu som zväčšil, aby Lobster vynikol
+    fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif',
+    fontWeight: '400' 
+  },
+
   miniHeart: { marginLeft: 8 },
   arrow: { fontSize: 18 },
   headerControls: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
   backButton: { paddingRight: 20, paddingVertical: 10 },
   backText: { fontSize: 18, fontWeight: 'bold' },
-  rightControls: { flexDirection: 'row', alignItems: 'center' },
-  zoomBtn: { padding: 10, borderRadius: 10, minWidth: 42, alignItems: 'center', marginLeft: 8 },
+  rightControls: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  zoomBtn: { padding: 8, borderRadius: 10, minWidth: 40, alignItems: 'center' },
   detailCard: { borderRadius: 20, padding: 25, elevation: 3, marginTop: 10 },
   detailNazov: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   detailText: { lineHeight: 32, textAlign: 'center' },
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-                                         
+    
