@@ -178,6 +178,12 @@ export default function App() {
       metaMobile.name = 'mobile-web-app-capable';
       metaMobile.content = 'yes';
       document.head.appendChild(metaMobile);
+      
+const manifestLink = document.createElement('link');
+manifestLink.rel = 'manifest';
+manifestLink.href = '/manifest.json';
+document.head.appendChild(manifestLink);
+      
     }
   }, []);
 
