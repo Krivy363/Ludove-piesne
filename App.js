@@ -173,6 +173,11 @@ export default function App() {
       appleLink.rel = 'apple-touch-icon';
       appleLink.href = iconUrl;
       document.head.appendChild(appleLink);
+      
+      const metaMobile = document.createElement('meta');
+      metaMobile.name = 'mobile-web-app-capable';
+      metaMobile.content = 'yes';
+      document.head.appendChild(metaMobile);
     }
   }, []);
 
