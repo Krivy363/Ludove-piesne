@@ -35,12 +35,10 @@ const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
 ));
 
 const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fontSize, setFontSize }) => {
-  // --- ANIMÁCIA VYSÚVANIA (BOD 7) ---
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
 
   useEffect(() => {
     if (vybrana) {
-      // Vysunúť hore s pružným efektom
       Animated.spring(slideAnim, {
         toValue: 0,
         useNativeDriver: true,
@@ -48,7 +46,6 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
         tension: 40,
       }).start();
     } else {
-      // Zasunúť pod obrazovku
       Animated.timing(slideAnim, {
         toValue: screenHeight,
         duration: 300,
@@ -57,7 +54,6 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
     }
   }, [vybrana]);
 
-  // Ak nie je vybratá pieseň a animácia je dokončená (dole), nič nevykresľuj
   if (!vybrana && slideAnim._value === screenHeight) return null;
 
   return (
@@ -109,7 +105,6 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
   
   const filtered = useMemo(() => {
     const term = bezDiakritiky(search);
-    
     return data
       .filter(p => {
         if (!term) return true;
@@ -128,6 +123,14 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
           <Text style={{ fontSize: 24 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* --- CITÁT NA VRCHU --- */}
+      <View style={styles.quoteContainer}>
+        <Text style={[styles.quoteText, { color: theme.accent }]}>
+          „Kde sa spievajú ľudové piesne, tam žijú tradície.“
+        </Text>
+      </View>
+
       <TextInput 
         style={[styles.searchBar, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]} 
         placeholder="Hľadať pieseň alebo text..." 
@@ -162,26 +165,22 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // --- LOGIKA PRE TLAČIDLO SPÄŤ ---
   useEffect(() => {
     if (vybrana) {
       if (Platform.OS === 'web') {
         window.history.pushState({ detailOpen: true }, '');
       }
-
       const backAction = () => {
         setVybrana(null);
         return true;
       };
       const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
       const handleWebBack = () => {
         setVybrana(null);
       };
       if (Platform.OS === 'web') {
         window.addEventListener('popstate', handleWebBack);
       }
-
       return () => {
         backHandler.remove();
         if (Platform.OS === 'web') {
@@ -191,10 +190,16 @@ export default function App() {
     }
   }, [vybrana]);
 
-  // --- NASTAVENIE IKONY A TITULKU ---
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
+      
+      // --- NAČÍTANIE PÍSMA PRE CITÁT ---
+      const fontLink = document.createElement('link');
+      fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap';
+      fontLink.rel = 'stylesheet';
+      document.head.appendChild(fontLink);
+
       const iconUrl = "https://ludovepiesne.vercel.app/logo.png"; 
 
       const links = document.querySelectorAll("link[rel*='icon'], link[rel*='apple-touch-icon']");
@@ -324,8 +329,23 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 20 },
-  mainHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: Platform.OS === 'ios' ? 10 : 40, marginBottom: 20 },
+  mainHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: Platform.OS === 'ios' ? 10 : 40, marginBottom: 10 },
   title: { fontSize: 28, fontWeight: 'bold' },
+  
+  // ŠTÝLY PRE CITÁT
+  quoteContainer: {
+    paddingVertical: 15,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  quoteText: {
+    fontSize: 18,
+    textAlign: 'center',
+    fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif',
+    lineHeight: 26,
+    opacity: 0.9,
+  },
+
   searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16 },
   songCard: { padding: 18, borderRadius: 15, marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2 },
   songRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
@@ -343,4 +363,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-                 
+              
