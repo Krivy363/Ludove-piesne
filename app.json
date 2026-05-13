@@ -4,21 +4,21 @@
     "slug": "snack-5284e497-d564-486f-b15b-0e0ba6fe61db",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
+    "icon": "./public/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": false,
     "splash": {
-      "image": "./assets/logo.png",
+      "image": "./public/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/logo.png"
+      "icon": "./public/logo.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.png", 
+        "foregroundImage": "./public/logo.png", 
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
