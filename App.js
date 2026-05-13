@@ -1,7 +1,8 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { 
   StyleSheet, Text, View, FlatList, TextInput, 
-  TouchableOpacity, ScrollView, SafeAreaView, StatusBar, Platform, BackHandler
+  TouchableOpacity, ScrollView, SafeAreaView, StatusBar, Platform, BackHandler,
+  Animated, Dimensions 
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
@@ -11,6 +12,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { pesnickyData } from './songs'; 
 
 const Tab = createBottomTabNavigator();
+const { height: screenHeight } = Dimensions.get('window');
 
 // --- POMOCNÉ FUNKCIE ---
 const bezDiakritiky = (str) => {
@@ -33,18 +35,53 @@ const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
 ));
 
 const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fontSize, setFontSize }) => {
-  if (!vybrana) return null;
+  // --- ANIMÁCIA VYSÚVANIA (BOD 7) ---
+  const slideAnim = useRef(new Animated.Value(screenHeight)).current;
+
+  useEffect(() => {
+    if (vybrana) {
+      // Vysunúť hore s pružným efektom
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        useNativeDriver: true,
+        friction: 8,
+        tension: 40,
+      }).start();
+    } else {
+      // Zasunúť pod obrazovku
+      Animated.timing(slideAnim, {
+        toValue: screenHeight,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [vybrana]);
+
+  // Ak nie je vybratá pieseň a animácia je dokončená (dole), nič nevykresľuj
+  if (!vybrana && slideAnim._value === screenHeight) return null;
+
   return (
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: theme.bg, zIndex: 9999 }]}>
+    <Animated.View 
+      style={[
+        StyleSheet.absoluteFill, 
+        { 
+          backgroundColor: theme.bg, 
+          zIndex: 9999,
+          transform: [{ translateY: slideAnim }] 
+        }
+      ]}
+    >
       <SafeAreaView style={{ flex: 1 }}>
         <View style={[styles.headerControls, { borderBottomColor: theme.border, paddingHorizontal: 20 }]}>
           <TouchableOpacity onPress={() => setVybrana(null)} style={styles.backButton}>
             <Text style={[styles.backText, { color: theme.accent }]}>← Späť</Text>
           </TouchableOpacity>
           <View style={styles.rightControls}>
-            <TouchableOpacity onPress={() => toggleFavorite(vybrana.id)}>
-              <Text style={{ fontSize: 24 }}>{favorites.includes(vybrana.id) ? '❤️' : '🤍'}</Text>
-            </TouchableOpacity>
+            {vybrana && (
+              <TouchableOpacity onPress={() => toggleFavorite(vybrana.id)}>
+                <Text style={{ fontSize: 24 }}>{favorites.includes(vybrana.id) ? '❤️' : '🤍'}</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity onPress={() => setFontSize(f => Math.max(12, f - 2))} style={[styles.zoomBtn, {backgroundColor: theme.btnBg}]}>
               <Text style={{color: theme.accent, fontWeight: 'bold'}}>A-</Text>
             </TouchableOpacity>
@@ -54,14 +91,16 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
           </View>
         </View>
         <ScrollView contentContainerStyle={[styles.scrollContent, { paddingHorizontal: 20 }]}>
-          <View style={[styles.detailCard, { backgroundColor: theme.card }]}>
-            <Text style={[styles.detailNazov, { color: theme.accent }]}>{vybrana.nazov}</Text>
-            <View style={{height: 1, backgroundColor: theme.border, marginVertical: 15}} />
-            <Text style={[styles.detailText, { fontSize: fontSize, color: theme.text }]}>{vybrana.text}</Text>
-          </View>
+          {vybrana && (
+            <View style={[styles.detailCard, { backgroundColor: theme.card }]}>
+              <Text style={[styles.detailNazov, { color: theme.accent }]}>{vybrana.nazov}</Text>
+              <View style={{height: 1, backgroundColor: theme.border, marginVertical: 15}} />
+              <Text style={[styles.detailText, { fontSize: fontSize, color: theme.text }]}>{vybrana.text}</Text>
+            </View>
+          )}
         </ScrollView>
       </SafeAreaView>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -123,22 +162,19 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // --- LOGIKA PRE TLAČIDLO SPÄŤ (WEB AJ ANDROID) ---
+  // --- LOGIKA PRE TLAČIDLO SPÄŤ ---
   useEffect(() => {
     if (vybrana) {
-      // Keď otvoríme detail, pridáme stav do histórie prehliadača
       if (Platform.OS === 'web') {
         window.history.pushState({ detailOpen: true }, '');
       }
 
-      // Pre Android (ak by si to niekedy balil ako appku)
       const backAction = () => {
         setVybrana(null);
         return true;
       };
       const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
-      // Pre Web: počúvame na stlačenie šípky späť v prehliadači
       const handleWebBack = () => {
         setVybrana(null);
       };
@@ -159,7 +195,7 @@ export default function App() {
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
-      const iconUrl = "[https://ludovepiesne.vercel.app/logo.png](https://ludovepiesne.vercel.app/logo.png)"; // Používame už logo.png
+      const iconUrl = "https://ludovepiesne.vercel.app/logo.png"; 
 
       const links = document.querySelectorAll("link[rel*='icon'], link[rel*='apple-touch-icon']");
       links.forEach(l => l.remove());
@@ -179,11 +215,10 @@ export default function App() {
       metaMobile.content = 'yes';
       document.head.appendChild(metaMobile);
       
-const manifestLink = document.createElement('link');
-manifestLink.rel = 'manifest';
-manifestLink.href = '/manifest.json';
-document.head.appendChild(manifestLink);
-      
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = '/manifest.json';
+      document.head.appendChild(manifestLink);
     }
   }, []);
 
@@ -308,4 +343,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-      
+                 
