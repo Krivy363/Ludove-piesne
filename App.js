@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 2,
     fontWeight: 'bold',
-    width: '100%',
+    width: '110%',
     textAlign: 'center',
   },
   mainHeader: { 
