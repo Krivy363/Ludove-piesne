@@ -140,7 +140,7 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // OPRAVA TLAČIDLA SPÄŤ (Android & Web)
+  // OPRAVA TLAČIDLA SPÄŤ
   useEffect(() => {
     const backAction = () => {
       if (vybrana) {
@@ -149,25 +149,14 @@ export default function App() {
       }
       return false; 
     };
-
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    if (Platform.OS === 'web' && vybrana) {
-      window.history.pushState({ detail: true }, '');
-      const handlePopState = () => setVybrana(null);
-      window.addEventListener('popstate', handlePopState);
-      return () => {
-        backHandler.remove();
-        window.removeEventListener('popstate', handlePopState);
-      };
-    }
-
     return () => backHandler.remove();
   }, [vybrana]);
 
-  // Web font
+  // Web konfigurácia (TU NASTAVUJEME HLAVNÝ NÁZOV STRÁNKY)
   useEffect(() => {
     if (Platform.OS === 'web') {
+      document.title = "Ľudové piesne"; // Toto opraví názov v prehliadači
       const fontLink = document.createElement('link');
       fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap';
       fontLink.rel = 'stylesheet';
@@ -215,10 +204,23 @@ export default function App() {
           },
           tabBarActiveTintColor: theme.accent, tabBarInactiveTintColor: '#999',
         }}>
-          <Tab.Screen name="Všetky" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
+          {/* ZMENENÝ NÁZOV KARTY Z "Všetky" NA "Ľudové piesne" */}
+          <Tab.Screen 
+            name="Ľudové piesne" 
+            options={{ 
+              tabBarLabel: 'Piesne', // Text pod ikonkou v menu môže zostať krátky
+              tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> 
+            }}
+          >
             {() => <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}
           </Tab.Screen>
-          <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
+          
+          <Tab.Screen 
+            name="Obľúbené" 
+            options={{ 
+              tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> 
+            }}
+          >
             {() => <ListScreen data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}
           </Tab.Screen>
         </Tab.Navigator>
@@ -241,14 +243,7 @@ const styles = StyleSheet.create({
   searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16 },
   songCard: { padding: 18, borderRadius: 15, marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2 },
   songRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  
-  // TU JE ZMENENÉ PÍSMO PRE ZOZNAM
-  songTitle: { 
-    fontSize: 20, // Trochu som zväčšil, aby Lobster vynikol
-    fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif',
-    fontWeight: '400' 
-  },
-
+  songTitle: { fontSize: 20, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', fontWeight: '400' },
   miniHeart: { marginLeft: 8 },
   arrow: { fontSize: 18 },
   headerControls: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
@@ -262,4 +257,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-    
+                         
