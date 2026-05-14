@@ -8,7 +8,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// Predpokladáme, že dáta sú v tomto súbore
 import { pesnickyData } from './songs'; 
 
 const Tab = createBottomTabNavigator();
@@ -18,7 +17,6 @@ const bezDiakritiky = (str) => {
   return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
 };
 
-// Komponent položky v zozname
 const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
   <TouchableOpacity 
     style={[styles.songCard, { backgroundColor: theme.card }]} 
@@ -26,13 +24,12 @@ const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
   >
     <View style={styles.songRow}>
       <Text style={[styles.songTitle, { color: theme.text }]}>{item.nazov}</Text>
-      {isFavorite && <Text style={styles.miniHeart}> ❤️</Text>}
+      {isFavorite && <Text style={styles.miniHeart}>❤️</Text>}
     </View>
     <Text style={[styles.arrow, { color: theme.accent }]}>〉</Text>
   </TouchableOpacity>
 ));
 
-// Komponent pre detail piesne (vyskakovacie okno)
 const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fontSize, setFontSize }) => {
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   const [isVisible, setIsVisible] = useState(false);
@@ -46,7 +43,7 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
         setIsVisible(false);
       });
     }
-  }, [vybrana, slideAnim]);
+  }, [vybrana]);
 
   if (!vybrana && !isVisible) return null;
 
@@ -75,7 +72,7 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
           {vybrana && (
             <View style={[styles.detailCard, { backgroundColor: theme.card }]}>
               <Text style={[styles.detailNazov, { color: theme.text }]}>{vybrana.nazov}</Text>
-              <div style={{height: 1, backgroundColor: theme.border, marginVertical: 15}} />
+              <View style={{height: 1, backgroundColor: theme.border, marginVertical: 15}} />
               <Text style={[styles.detailText, { fontSize: fontSize, color: theme.text }]}>{vybrana.text}</Text>
             </View>
           )}
@@ -85,10 +82,8 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
   );
 };
 
-// Hlavná obrazovka so zoznamom
 const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, setIsDarkMode }) => {
   const [search, setSearch] = useState('');
-  
   const filtered = useMemo(() => {
     const term = bezDiakritiky(search);
     return data.filter(p => !term || bezDiakritiky(p.nazov).includes(term) || bezDiakritiky(p.text).includes(term))
@@ -98,67 +93,34 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <View style={[styles.folkBorder, { backgroundColor: theme.accent, marginTop: Platform.OS === 'ios' ? 0 : 30 }]}>
+        {/* Pridali sme ešte viac vzoru pre extrémne široké obrazovky */}
         <Text style={styles.folkPattern} numberOfLines={1}>
           ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
         </Text>
       </View>
 
       <View style={styles.mainHeader}>
-        <View style={styles.titleWrapper}>
-          <Text style={[styles.title, { color: theme.accent }]}>{title}</Text>
-        </View>
+        <View style={styles.titleWrapper}><Text style={[styles.title, { color: theme.accent }]}>{title}</Text></View>
         <TouchableOpacity style={styles.modeToggle} onPress={() => setIsDarkMode(!isDarkMode)}>
           <Text style={{ fontSize: 24 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.quoteContainer}>
-        <Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ľudové piesne, tam žijú tradície.“</Text>
-      </View>
-
+      <View style={styles.quoteContainer}><Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ľudové piesne, tam žijú tradície.“</Text></View>
       <TextInput 
         style={[styles.searchBar, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]} 
-        placeholder="Hľadať pieseň alebo text..." 
-        placeholderTextColor="#999" 
-        onChangeText={setSearch} 
-        value={search} 
-        clearButtonMode="while-editing"
+        placeholder="Hľadať pieseň alebo text..." placeholderTextColor="#999" onChangeText={setSearch} value={search} clearButtonMode="while-editing"
       />
       
       <FlatList
         data={filtered}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={{ paddingBottom: 150 }} 
-        renderItem={({ item }) => (
-          <SongItem 
-            item={item} 
-            isFavorite={favorites.includes(item.id)} 
-            onPress={setVybrana} 
-            theme={theme} 
-          />
-        )}
+        renderItem={({ item }) => <SongItem item={item} isFavorite={favorites.includes(item.id)} onPress={setVybrana} theme={theme} />}
         ListEmptyComponent={<Text style={styles.emptyText}>Nenašli sa žiadne piesne</Text>}
       />
     </SafeAreaView>
   );
-};
-
-// Správa histórie pre web (tlačidlo späť v prehliadači)
-const HistoryManager = ({ navigation }) => {
-  useEffect(() => {
-    if (Platform.OS !== 'web') return;
-    const unsubscribe = navigation.addListener('state', (e) => {
-      const routeName = e.data.state.routes[e.data.state.index].name;
-      window.history.pushState({ tab: routeName }, '');
-    });
-    const handlePopState = (event) => {
-      if (event.state && event.state.tab) { navigation.navigate(event.state.tab); }
-      else { navigation.navigate('Ľudové piesne'); }
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => { unsubscribe(); window.removeEventListener('popstate', handlePopState); };
-  }, [navigation]);
-  return null;
 };
 
 export default function App() {
@@ -167,104 +129,44 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // Hardware tlačidlo späť (Android)
   useEffect(() => {
     const backAction = () => { if (vybrana) { setVybrana(null); return true; } return false; };
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    if (Platform.OS === 'web') {
+      if (vybrana) window.history.pushState({ detailOpen: true }, '');
+      const handlePopState = () => { if (vybrana) setVybrana(null); };
+      window.addEventListener('popstate', handlePopState);
+      return () => { backHandler.remove(); window.removeEventListener('popstate', handlePopState); };
+    }
     return () => backHandler.remove();
   }, [vybrana]);
 
-  // História prehliadača pre DetailView (Web)
-  useEffect(() => {
-    if (Platform.OS === 'web' && vybrana) {
-      window.history.pushState({ detailOpen: true }, '');
-      const handlePopState = () => { if (vybrana) setVybrana(null); };
-      window.addEventListener('popstate', handlePopState);
-      return () => window.removeEventListener('popstate', handlePopState);
-    }
-  }, [vybrana]);
-
-  // Načítanie dát a fontov
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
       const fontLink = document.createElement('link');
-      fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap'; 
-      fontLink.rel = 'stylesheet';
+      fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap'; fontLink.rel = 'stylesheet';
       document.head.appendChild(fontLink);
     }
-    const loadData = async () => { 
-      const saved = await AsyncStorage.getItem('@moje_srdiecka'); 
-      if (saved) setFavorites(JSON.parse(saved)); 
-    };
+    const loadData = async () => { const saved = await AsyncStorage.getItem('@moje_srdiecka'); if (saved) setFavorites(JSON.parse(saved)); };
     loadData();
   }, []);
 
-  useEffect(() => { 
-    AsyncStorage.setItem('@moje_srdiecka', JSON.stringify(favorites)); 
-  }, [favorites]);
+  useEffect(() => { AsyncStorage.setItem('@moje_srdiecka', JSON.stringify(favorites)); }, [favorites]);
+  const toggleFavorite = useCallback((id) => { setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]); }, []);
 
-  const toggleFavorite = useCallback((id) => { 
-    setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]); 
-  }, []);
-
-  const theme = { 
-    bg: isDarkMode ? '#1a1a1a' : '#fdfbf7', 
-    card: isDarkMode ? '#2d2d2d' : '#fff', 
-    text: isDarkMode ? '#e0e0e0' : '#333', 
-    accent: '#8b4513', 
-    border: isDarkMode ? '#444' : '#e0d7c6', 
-    btnBg: isDarkMode ? '#3d3d3d' : '#f0e6d2' 
-  };
+  const theme = { bg: isDarkMode ? '#1a1a1a' : '#fdfbf7', card: isDarkMode ? '#2d2d2d' : '#fff', text: isDarkMode ? '#e0e0e0' : '#333', accent: '#8b4513', border: isDarkMode ? '#444' : '#e0d7c6', btnBg: isDarkMode ? '#3d3d3d' : '#f0e6d2' };
 
   return (
     <NavigationContainer>
       <View style={{ flex: 1, backgroundColor: theme.bg }}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        
-        <DetailView 
-          vybrana={vybrana} 
-          setVybrana={setVybrana} 
-          theme={theme} 
-          favorites={favorites} 
-          toggleFavorite={toggleFavorite} 
-          fontSize={fontSize} 
-          setFontSize={setFontSize}
-        />
-
-        <Tab.Navigator 
-          backBehavior="firstRoute"
-          screenOptions={{ 
-            headerShown: false, 
-            tabBarStyle: { 
-              backgroundColor: theme.card, 
-              borderTopColor: 'transparent', 
-              height: 65, 
-              marginBottom: Platform.OS === 'ios' ? 30 : 20, 
-              marginHorizontal: 30, 
-              borderRadius: 40, 
-              position: 'absolute', 
-              elevation: 12 
-            }, 
-            tabBarActiveTintColor: theme.accent, 
-            tabBarInactiveTintColor: '#999',
+        <DetailView vybrana={vybrana} setVybrana={setVybrana} theme={theme} favorites={favorites} toggleFavorite={toggleFavorite} fontSize={fontSize} setFontSize={setFontSize}/>
+        <Tab.Navigator screenOptions={{ 
+          headerShown: false, tabBarStyle: { backgroundColor: theme.card, borderTopColor: 'transparent', height: 65, marginBottom: Platform.OS === 'ios' ? 30 : 20, marginHorizontal: 30, borderRadius: 40, position: 'absolute', elevation: 12 }, tabBarActiveTintColor: theme.accent, tabBarInactiveTintColor: '#999',
         }}>
-          <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
-            {({ navigation }) => (
-              <>
-                <HistoryManager navigation={navigation} />
-                <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
-              </>
-            )}
-          </Tab.Screen>
-          <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
-            {({ navigation }) => (
-              <>
-                <HistoryManager navigation={navigation} />
-                <ListScreen data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
-              </>
-            )}
-          </Tab.Screen>
+          <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>{() => <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}</Tab.Screen>
+          <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>{() => <ListScreen data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}</Tab.Screen>
         </Tab.Navigator>
       </View>
     </NavigationContainer>
@@ -275,35 +177,30 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   folkBorder: { height: 24, width: '100%', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', marginBottom: 5 },
   folkPattern: { 
-    color: '#fff', fontSize: 16, letterSpacing: 2, fontWeight: 'bold', width: '100%', textAlign: 'center'
-  },
-  mainHeader: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    paddingHorizontal: 20, 
-    marginBottom: 5, 
-    minHeight: 60 
-  },
-  titleWrapper: { 
-    flex: 1, 
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  title: { 
-    fontSize: 34, 
-    fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', 
+    color: '#fff', 
+    fontSize: 16, 
+    letterSpacing: 2, 
+    fontWeight: 'bold', 
+    width: '100%', 
     textAlign: 'center',
-    marginLeft: 40 // Kompenzácia pre ikonu prepínača vpravo, aby bol text v strede
+    // TU JE TA OPRAVA: Natvrdo povieme webu, aby nepoužíval bodky
+    ...Platform.select({
+      web: {
+        textOverflow: 'clip',
+        whiteSpace: 'nowrap',
+      }
+    })
   },
-  modeToggle: { padding: 10 },
+  mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, marginBottom: 5, position: 'relative', minHeight: 50 },
+  titleWrapper: { flex: 1, alignItems: 'center' },
+  title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', textAlign: 'center' },
+  modeToggle: { position: 'absolute', right: 20, padding: 10 },
   quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 },
-  quoteText: { fontSize: 16, textAlign: 'center', opacity: 0.8 },
+  quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', opacity: 0.8 },
   searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16, marginHorizontal: 20 },
   songCard: { padding: 18, borderRadius: 15, marginBottom: 10, marginHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 1 },
   songRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  songTitle: { fontSize: 20 },
-  miniHeart: { fontSize: 14 },
+  songTitle: { fontSize: 20, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   arrow: { fontSize: 18 },
   headerControls: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
   backButton: { paddingLeft: 20, paddingVertical: 10 },
@@ -311,9 +208,9 @@ const styles = StyleSheet.create({
   rightControls: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingRight: 20 },
   zoomBtn: { padding: 8, borderRadius: 10, minWidth: 40, alignItems: 'center' },
   detailCard: { borderRadius: 20, padding: 25, elevation: 3, marginTop: 10 },
-  detailNazov: { fontSize: 28, fontWeight: 'bold', textAlign: 'center' },
+  detailNazov: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   detailText: { lineHeight: 32, textAlign: 'center' },
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-    
+          
