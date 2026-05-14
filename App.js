@@ -9,7 +9,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // --- IMPORT DÁT ---
-// Uisti sa, že súbor songs.js existuje a exportuje pesnickyData
 import { pesnickyData } from './songs'; 
 
 const Tab = createBottomTabNavigator();
@@ -73,7 +72,7 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
           {vybrana && (
             <View style={[styles.detailCard, { backgroundColor: theme.card }]}>
               <Text style={[styles.detailNazov, { color: theme.accent }]}>{vybrana.nazov}</Text>
-              <View style={{height: 1, backgroundColor: theme.border, marginVertical: 15}} />
+              <div style={{height: 1, backgroundColor: theme.border, marginVertical: 15}} />
               <Text style={[styles.detailText, { fontSize: fontSize, color: theme.text }]}>{vybrana.text}</Text>
             </View>
           )}
@@ -99,7 +98,7 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       
-      {/* HORNÉ OLEMOVANIE */}
+      {/* HORNÉ OLEMOVANIE - IBA TU NA VRCHU */}
       <View style={[styles.folkBorder, { backgroundColor: theme.accent, marginTop: Platform.OS === 'ios' ? 0 : 30 }]}>
         <Text style={styles.folkPattern}>❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖</Text>
       </View>
@@ -137,11 +136,6 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
         )}
         ListEmptyComponent={<Text style={styles.emptyText}>Nenašli sa žiadne piesne</Text>}
       />
-
-      {/* SPODNÉ OLEMOVANIE (nad menu) */}
-      <View style={[styles.folkBorderBottom, { backgroundColor: theme.accent }]}>
-        <Text style={styles.folkPattern}>❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖</Text>
-      </View>
     </SafeAreaView>
   );
 };
@@ -153,7 +147,7 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // OPRAVA TLAČIDLA SPÄŤ (Android & Web)
+  // Späť tlačidlo logika
   useEffect(() => {
     const backAction = () => {
       if (vybrana) {
@@ -162,23 +156,11 @@ export default function App() {
       }
       return false; 
     };
-
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    if (Platform.OS === 'web' && vybrana) {
-      window.history.pushState({ detail: true }, '');
-      const handlePopState = () => setVybrana(null);
-      window.addEventListener('popstate', handlePopState);
-      return () => {
-        backHandler.remove();
-        window.removeEventListener('popstate', handlePopState);
-      };
-    }
-
     return () => backHandler.remove();
   }, [vybrana]);
 
-  // Web konfigurácia (Titulok v prehliadači a Font)
+  // Web konfigurácia
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
@@ -254,8 +236,6 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 0 },
-  
-  // ŠTÝLY PRE OLEMOVANIE
   folkBorder: {
     height: 24,
     width: '100%',
@@ -264,23 +244,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 5,
   },
-  folkBorderBottom: {
-    height: 24,
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 95, 
-  },
   folkPattern: {
     color: '#fff',
     fontSize: 16,
     letterSpacing: 2,
     fontWeight: 'bold',
   },
-
-  // HLAVIČKA A TEXTY
   mainHeader: { 
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', 
     paddingHorizontal: 20, marginBottom: 5, position: 'relative', minHeight: 50
@@ -290,10 +259,7 @@ const styles = StyleSheet.create({
   modeToggle: { position: 'absolute', right: 20, padding: 10 },
   quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 },
   quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', lineHeight: 22, opacity: 0.8 },
-  
   searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16, marginHorizontal: 20 },
-  
-  // ZOZNAM
   songCard: { 
     padding: 18, borderRadius: 15, marginBottom: 10, marginHorizontal: 20,
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', 
@@ -303,8 +269,6 @@ const styles = StyleSheet.create({
   songTitle: { fontSize: 20, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', fontWeight: '400' },
   miniHeart: { marginLeft: 8 },
   arrow: { fontSize: 18 },
-
-  // DETAIL
   headerControls: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
   backButton: { paddingLeft: 20, paddingVertical: 10 },
   backText: { fontSize: 18, fontWeight: 'bold' },
@@ -316,3 +280,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
+          
