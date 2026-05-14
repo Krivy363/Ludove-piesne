@@ -84,7 +84,6 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
 
 const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, setIsDarkMode }) => {
   const [search, setSearch] = useState('');
-  
   const filtered = useMemo(() => {
     const term = bezDiakritiky(search);
     return data.filter(p => !term || bezDiakritiky(p.nazov).includes(term) || bezDiakritiky(p.text).includes(term))
@@ -94,8 +93,9 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <View style={[styles.folkBorder, { backgroundColor: theme.accent, marginTop: Platform.OS === 'ios' ? 0 : 30 }]}>
-        <Text style={styles.folkPattern} numberOfLines={1} ellipsizeMode="clip">
-          ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
+        {/* Pridali sme ešte viac vzoru pre extrémne široké obrazovky */}
+        <Text style={styles.folkPattern} numberOfLines={1}>
+          ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
         </Text>
       </View>
 
@@ -176,7 +176,21 @@ export default function App() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   folkBorder: { height: 24, width: '100%', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', marginBottom: 5 },
-  folkPattern: { color: '#fff', fontSize: 16, letterSpacing: 2, fontWeight: 'bold', width: '200%', textAlign: 'center' },
+  folkPattern: { 
+    color: '#fff', 
+    fontSize: 16, 
+    letterSpacing: 2, 
+    fontWeight: 'bold', 
+    width: '100%', 
+    textAlign: 'center',
+    // TU JE TA OPRAVA: Natvrdo povieme webu, aby nepoužíval bodky
+    ...Platform.select({
+      web: {
+        textOverflow: 'clip',
+        whiteSpace: 'nowrap',
+      }
+    })
+  },
   mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, marginBottom: 5, position: 'relative', minHeight: 50 },
   titleWrapper: { flex: 1, alignItems: 'center' },
   title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', textAlign: 'center' },
@@ -199,4 +213,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-                
+          
