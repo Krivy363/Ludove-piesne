@@ -555,8 +555,8 @@ Refr.: Má roztomilá Maruško, pojď si se mnou na lůžko, má roztomilá Maru
   },
   {
     id: '50',
-    nazov: "Go̲raľu, cy či ňe žaľ",
-    text: `1. Go̲raľu, cy či ňe žaľ, odhodžič od stron ojcyzny. Švjyrkovyk ľaso̲f i haľ, i tyk potoko̲f střebřystyk (přecystyk). [:Go̲raľu, cy či ňe žaľ, go̲raľu, vro̲č še do haľ.:]
+    nazov: "Goraľu, cy či ňe žaľ",
+    text: `1. Goraľu, cy či ňe žaľ, odhodžič od stron ojcyzny. Švjyrkovyk ľasof i haľ, i tyk potokof střebřystyk (přecystyk). [:Goraľu, cy či ňe žaľ, goraľu, vroč še do haľ.:]
 
 2. I goraľ na gory spožyral, i lzy renkavem učyral. I gory opuščič třeba, dľa hľeba, paňe, dľa hľeba. [:Goraľu, cy či ňe zaľ, goraľu, vroč še do haľ.:]
 
