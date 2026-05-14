@@ -105,7 +105,7 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
         </TouchableOpacity>
       </View>
 
-      <View style={styles.quoteContainer}><Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ljudové piesne, tam žijú tradície.“</Text></View>
+      <View style={styles.quoteContainer}><Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ľudové piesne, tam žijú tradície.“</Text></View>
       <TextInput 
         style={[styles.searchBar, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]} 
         placeholder="Hľadať pieseň alebo text..." placeholderTextColor="#999" onChangeText={setSearch} value={search} clearButtonMode="while-editing"
