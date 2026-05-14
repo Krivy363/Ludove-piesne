@@ -71,7 +71,7 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
         <ScrollView contentContainerStyle={[styles.scrollContent, { paddingHorizontal: 20 }]}>
           {vybrana && (
             <View style={[styles.detailCard, { backgroundColor: theme.card }]}>
-              {/* TU JE ZMENA: Farba nadpisu v detaile je teraz theme.text (čierna) */}
+              {/* OPRAVENÉ: Nadpis piesne je teraz čierny (theme.text) */}
               <Text style={[styles.detailNazov, { color: theme.text }]}>{vybrana.nazov}</Text>
               <View style={{height: 1, backgroundColor: theme.border, marginVertical: 15}} />
               <Text style={[styles.detailText, { fontSize: fontSize, color: theme.text }]}>{vybrana.text}</Text>
@@ -99,14 +99,14 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       
-      {/* OPRAVENÉ OLEMOVANIE: Teraz vždy v jednom riadku vďaka numberOfLines */}
+      {/* OPRAVENÉ: Border s viacerými kosoštvorcami a clip módom bez bodiek */}
       <View style={[styles.folkBorder, { backgroundColor: theme.accent, marginTop: Platform.OS === 'ios' ? 0 : 30 }]}>
         <Text 
           style={styles.folkPattern} 
           numberOfLines={1} 
           ellipsizeMode="clip"
         >
-          ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
+          ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
         </Text>
       </View>
 
@@ -154,6 +154,7 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
+  // OPRAVENÉ: Logika tlačidla SPÄŤ pre Mobilný prehliadač (Web) aj Android
   useEffect(() => {
     const backAction = () => {
       if (vybrana) {
@@ -162,7 +163,23 @@ export default function App() {
       }
       return false; 
     };
+
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    if (Platform.OS === 'web') {
+      if (vybrana) {
+        window.history.pushState({ detailOpen: true }, '');
+      }
+      const handlePopState = () => {
+        if (vybrana) setVybrana(null);
+      };
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        backHandler.remove();
+        window.removeEventListener('popstate', handlePopState);
+      };
+    }
+
     return () => backHandler.remove();
   }, [vybrana]);
 
@@ -254,7 +271,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 2,
     fontWeight: 'bold',
-    width: '110%',
+    width: '100%',
     textAlign: 'center',
   },
   mainHeader: { 
@@ -287,4 +304,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-    
+                                                             
