@@ -18,15 +18,13 @@ const bezDiakritiky = (str) => {
 };
 
 const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
-  <TouchableOpacity 
-    style={[styles.songCard, { backgroundColor: theme.card }]} 
-    onPress={() => onPress(item)}
+  <TouchableOpacity backgroundColor: onPress="{()" style="{[styles.songCard," theme.card { }]}> onPress(item)}
   >
-    <View style={styles.songRow}>
-      <Text style={[styles.songTitle, { color: theme.text }]}>{item.nazov}</Text>
-      {isFavorite && <Text style={styles.miniHeart}>❤️</Text>}
+    <View style="{styles.songRow}">
+      <Text color: style="{[styles.songTitle," theme.text { }]}>{item.nazov}</Text>
+      {isFavorite && <Text style="{styles.miniHeart}">❤️</Text>}
     </View>
-    <Text style={[styles.arrow, { color: theme.accent }]}>〉</Text>
+    <Text color: style="{[styles.arrow," theme.accent { }]}>〉</Text>
   </TouchableOpacity>
 ));
 
@@ -48,32 +46,32 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
   if (!vybrana && !isVisible) return null;
 
   return (
-    <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: theme.bg, zIndex: 9999, transform: [{ translateY: slideAnim }] }]}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={[styles.headerControls, { borderBottomColor: theme.border, paddingHorizontal: 20 }]}>
-          <TouchableOpacity onPress={() => setVybrana(null)} style={styles.backButton}>
-            <Text style={[styles.backText, { color: theme.accent }]}>← Späť</Text>
+    <Animated.View 9999, [{ backgroundColor: slideAnim style="{[StyleSheet.absoluteFill," theme.bg, transform: translateY: zIndex: { }] }]}>
+      <SafeAreaView 1 flex: style="{{" }}>
+        <View 20 borderBottomColor: paddingHorizontal: style="{[styles.headerControls," theme.border, { }]}>
+          <TouchableOpacity onPress="{()"> setVybrana(null)} style={styles.backButton}>
+            <Text color: style="{[styles.backText," theme.accent { }]}>← Späť</Text>
           </TouchableOpacity>
-          <View style={styles.rightControls}>
+          <View style="{styles.rightControls}">
             {vybrana && (
-              <TouchableOpacity onPress={() => toggleFavorite(vybrana.id)}>
-                <Text style={{ fontSize: 24 }}>{favorites.includes(vybrana.id) ? '❤️' : '🤍'}</Text>
+              <TouchableOpacity onPress="{()"> toggleFavorite(vybrana.id)}>
+                <Text 24 fontSize: style="{{" }}>{favorites.includes(vybrana.id) ? '❤️' : '🤍'}</Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity onPress={() => setFontSize(f => Math.max(12, f - 2))} style={[styles.zoomBtn, {backgroundColor: theme.btnBg}]}>
-              <Text style={{color: theme.accent, fontWeight: 'bold'}}>A-</Text>
+            <TouchableOpacity onPress="{()"> setFontSize(f => Math.max(12, f - 2))} style={[styles.zoomBtn, {backgroundColor: theme.btnBg}]}>
+              <Text 'bold'}} fontWeight: style="{{color:" theme.accent,>A-</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setFontSize(f => Math.min(45, f + 2))} style={[styles.zoomBtn, {backgroundColor: theme.btnBg}]}>
-              <Text style={{color: theme.accent, fontWeight: 'bold'}}>A+</Text>
+            <TouchableOpacity onPress="{()"> setFontSize(f => Math.min(45, f + 2))} style={[styles.zoomBtn, {backgroundColor: theme.btnBg}]}>
+              <Text 'bold'}} fontWeight: style="{{color:" theme.accent,>A+</Text>
             </TouchableOpacity>
           </View>
         </View>
-        <ScrollView contentContainerStyle={[styles.scrollContent, { paddingHorizontal: 20 }]}>
+        <ScrollView 20 contentContainerStyle="{[styles.scrollContent," paddingHorizontal: { }]}>
           {vybrana && (
-            <View style={[styles.detailCard, { backgroundColor: theme.card }]}>
-              <Text style={[styles.detailNazov, { color: theme.text }]}>{vybrana.nazov}</Text>
-              <View style={{height: 1, backgroundColor: theme.border, marginVertical: 15}} />
-              <Text style={[styles.detailText, { fontSize: fontSize, color: theme.text }]}>{vybrana.text}</Text>
+            <View backgroundColor: style="{[styles.detailCard," theme.card { }]}>
+              <Text color: style="{[styles.detailNazov," theme.text { }]}>{vybrana.nazov}</Text>
+              <View 1, 15}} backgroundColor: marginVertical: style="{{height:" theme.border,/>
+              <Text color: fontSize, fontSize: style="{[styles.detailText," theme.text { }]}>{vybrana.text}</Text>
             </View>
           )}
         </ScrollView>
@@ -91,41 +89,34 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
   }, [search, data]);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
-      <View style={[styles.folkBorder, { backgroundColor: theme.accent, marginTop: Platform.OS === 'ios' ? 0 : 30 }]}>
-        <Text style={styles.folkPattern} numberOfLines={1}>
+    <SafeAreaView backgroundColor: style="{[styles.container," theme.bg { }]}>
+      <View 'ios' 0 30 : ? Platform.OS="==" backgroundColor: marginTop: style="{[styles.folkBorder," theme.accent, { }]}>
+        <Text numberOfLines="{1}" style="{styles.folkPattern}">
           ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
         </Text>
       </View>
 
-      <View style={styles.mainHeader}>
-        {/* OPRAVENÉ: Použitý View namiesto div a lepšie centrovanie */}
-        <View style={styles.titleWrapper}>
-          <Text style={[styles.title, { color: theme.accent }]}>{title}</Text>
+      <View style="{styles.mainHeader}">
+        <View style="{styles.titleWrapper}">
+          <Text color: style="{[styles.title," theme.accent { }]}>{title}</Text>
         </View>
-        <TouchableOpacity style={styles.modeToggle} onPress={() => setIsDarkMode(!isDarkMode)}>
-          <Text style={{ fontSize: 24 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
+        <TouchableOpacity onPress="{()" style="{styles.modeToggle}"> setIsDarkMode(!isDarkMode)}>
+          <Text 24 fontSize: style="{{" }}>{isDarkMode ? '☀️' : '🌙'}</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.quoteContainer}><Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ľudové piesne, tam žijú tradície.“</Text></View>
-      <TextInput 
-        style={[styles.searchBar, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]} 
-        placeholder="Hľadať pieseň alebo text..." placeholderTextColor="#999" onChangeText={setSearch} value={search} clearButtonMode="while-editing"
-      />
+      <View style="{styles.quoteContainer}"><Text color: style="{[styles.quoteText," theme.accent { }]}>„Kde sa spievajú ľudové piesne, tam žijú tradície.“</Text></View>
+      <TextInput backgroundColor: borderColor: clearButtonMode="while-editing" color: onChangeText="{setSearch}" placeholder="Hľadať pieseň alebo text..." placeholderTextColor="#999" style="{[styles.searchBar," theme.border theme.card, theme.text, value="{search}" { }]}/>
       
-      <FlatList
-        data={filtered}
-        keyExtractor={item => item.id.toString()}
+      <FlatList data="{filtered}" keyExtractor="{item"> item.id.toString()}
         contentContainerStyle={{ paddingBottom: 150 }} 
-        renderItem={({ item }) => <SongItem item={item} isFavorite={favorites.includes(item.id)} onPress={setVybrana} theme={theme} />}
-        ListEmptyComponent={<Text style={styles.emptyText}>Nenašli sa žiadne piesne</Text>}
+        renderItem={({ item }) => <SongItem isFavorite="{favorites.includes(item.id)}" item="{item}" onPress="{setVybrana}" theme="{theme}"/>}
+        ListEmptyComponent={<Text style="{styles.emptyText}">Nenašli sa žiadne piesne</Text>}
       />
-    </SafeAreaView>
+    </FlatList></SafeAreaView>
   );
 };
 
-// Pomocník pre históriu na webe
 const HistoryManager = ({ navigation }) => {
   useEffect(() => {
     if (Platform.OS !== 'web') return;
@@ -168,7 +159,7 @@ export default function App() {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
       const fontLink = document.createElement('link');
-      fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap'; fontLink.rel = 'stylesheet';
+      fontLink.href = '[https://fonts.googleapis.com/css2?family=Lobster&display=swap](https://fonts.googleapis.com/css2?family=Lobster&display=swap)'; fontLink.rel = 'stylesheet';
       document.head.appendChild(fontLink);
     }
     const loadData = async () => { const saved = await AsyncStorage.getItem('@moje_srdiecka'); if (saved) setFavorites(JSON.parse(saved)); };
@@ -182,33 +173,26 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <View style={{ flex: 1, backgroundColor: theme.bg }}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <DetailView vybrana={vybrana} setVybrana={setVybrana} theme={theme} favorites={favorites} toggleFavorite={toggleFavorite} fontSize={fontSize} setFontSize={setFontSize}/>
-        <Tab.Navigator 
-          backBehavior="firstRoute"
-          screenOptions={{ 
-            headerShown: false, 
-            tabBarStyle: { backgroundColor: theme.card, borderTopColor: 'transparent', height: 65, marginBottom: Platform.OS === 'ios' ? 30 : 20, marginHorizontal: 30, borderRadius: 40, position: 'absolute', elevation: 12 }, 
-            tabBarActiveTintColor: theme.accent, 
-            tabBarInactiveTintColor: '#999',
-        }}>
-          <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
+      <View 1, backgroundColor: flex: style="{{" theme.bg }}>
+        <StatusBar 'dark-content'} 'light-content' : ? barStyle="{isDarkMode"/>
+        <DetailView favorites="{favorites}" fontSize="{fontSize}" setFontSize="{setFontSize}" setVybrana="{setVybrana}" theme="{theme}" toggleFavorite="{toggleFavorite}" vybrana="{vybrana}"/>
+        <Tab.Navigator '#999', 'absolute', 'ios' 'transparent', 12 20, 30 30, 40, 65, : ? Platform.OS="==" backBehavior="firstRoute" backgroundColor: borderRadius: borderTopColor: elevation: false, headerShown: height: marginBottom: marginHorizontal: position: screenOptions="{{" tabBarActiveTintColor: tabBarInactiveTintColor: tabBarStyle: theme.accent, theme.card, { }, }}>
+          <Tab.Screen 'Piesne', name="Ľudové piesne" options="{{" tabBarIcon: tabBarLabel:> <Text 22}} style="{{fontSize:">🎶</Text> }}>
             {({ navigation }) => (
               <>
-                <HistoryManager navigation={navigation} />
-                <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+                <HistoryManager navigation="{navigation}"/>
+                <ListScreen data="{pesnickyData}" favorites="{favorites}" isDarkMode="{isDarkMode}" setIsDarkMode="{setIsDarkMode}" setVybrana="{setVybrana}" theme="{theme}" title="Ľudové piesne"/>
               </>
             )}
           </Tab.Screen>
-          <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
+          <Tab.Screen name="Obľúbené" options="{{" tabBarIcon:> <Text 22}} style="{{fontSize:">❤️</Text> }}>
             {({ navigation }) => (
               <>
-                <HistoryManager navigation={navigation} />
-                <ListScreen data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+                <HistoryManager navigation="{navigation}"/>
+                <ListScreen data="{pesnickyData.filter(p"> favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
               </>
             )}
-          </Tab.Screen>
+          </ListScreen></Tab.Screen>
         </Tab.Navigator>
       </View>
     </NavigationContainer>
@@ -222,24 +206,14 @@ const styles = StyleSheet.create({
     color: '#fff', fontSize: 16, letterSpacing: 2, fontWeight: 'bold', width: '100%', textAlign: 'center',
     ...Platform.select({ web: { textOverflow: 'clip', whiteSpace: 'nowrap' } })
   },
-  mainHeader: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    paddingHorizontal: 20, 
-    marginBottom: 5, 
-    minHeight: 60 
-  },
-  titleWrapper: { 
-    flex: 1, 
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
+  mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, marginBottom: 5, minHeight: 60, position: 'relative' },
+  titleWrapper: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   title: { 
     fontSize: 34, 
     fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', 
     textAlign: 'center',
-    marginLeft: 40 // Kompenzácia pre ikonu mesiaca vpravo, aby bol text presne v strede
+    // Mierny posun, aby bol nadpis opticky v strede aj s ikonou mesiaca
+    paddingLeft: 40 
   },
   modeToggle: { padding: 10 },
   quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 },
@@ -260,5 +234,3 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-```</View>
-  
