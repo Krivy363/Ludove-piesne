@@ -93,14 +93,13 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <View style={[styles.folkBorder, { backgroundColor: theme.accent, marginTop: Platform.OS === 'ios' ? 0 : 30 }]}>
-        {/* Pridali sme ešte viac vzoru pre extrémne široké obrazovky */}
         <Text style={styles.folkPattern} numberOfLines={1}>
           ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
         </Text>
       </View>
 
       <View style={styles.mainHeader}>
-        <View style={styles.titleWrapper}><Text style={[styles.title, { color: theme.accent }]}>{title}</Text></View>
+        <div style={styles.titleWrapper}><Text style={[styles.title, { color: theme.accent }]}>{title}</Text></div>
         <TouchableOpacity style={styles.modeToggle} onPress={() => setIsDarkMode(!isDarkMode)}>
           <Text style={{ fontSize: 24 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
         </TouchableOpacity>
@@ -162,8 +161,13 @@ export default function App() {
       <View style={{ flex: 1, backgroundColor: theme.bg }}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
         <DetailView vybrana={vybrana} setVybrana={setVybrana} theme={theme} favorites={favorites} toggleFavorite={toggleFavorite} fontSize={fontSize} setFontSize={setFontSize}/>
-        <Tab.Navigator screenOptions={{ 
-          headerShown: false, tabBarStyle: { backgroundColor: theme.card, borderTopColor: 'transparent', height: 65, marginBottom: Platform.OS === 'ios' ? 30 : 20, marginHorizontal: 30, borderRadius: 40, position: 'absolute', elevation: 12 }, tabBarActiveTintColor: theme.accent, tabBarInactiveTintColor: '#999',
+        <Tab.Navigator 
+          backBehavior="firstRoute"
+          screenOptions={{ 
+            headerShown: false, 
+            tabBarStyle: { backgroundColor: theme.card, borderTopColor: 'transparent', height: 65, marginBottom: Platform.OS === 'ios' ? 30 : 20, marginHorizontal: 30, borderRadius: 40, position: 'absolute', elevation: 12 }, 
+            tabBarActiveTintColor: theme.accent, 
+            tabBarInactiveTintColor: '#999',
         }}>
           <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>{() => <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}</Tab.Screen>
           <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>{() => <ListScreen data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}</Tab.Screen>
@@ -177,19 +181,8 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   folkBorder: { height: 24, width: '100%', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', marginBottom: 5 },
   folkPattern: { 
-    color: '#fff', 
-    fontSize: 16, 
-    letterSpacing: 2, 
-    fontWeight: 'bold', 
-    width: '100%', 
-    textAlign: 'center',
-    // TU JE TA OPRAVA: Natvrdo povieme webu, aby nepoužíval bodky
-    ...Platform.select({
-      web: {
-        textOverflow: 'clip',
-        whiteSpace: 'nowrap',
-      }
-    })
+    color: '#fff', fontSize: 16, letterSpacing: 2, fontWeight: 'bold', width: '100%', textAlign: 'center',
+    ...Platform.select({ web: { textOverflow: 'clip', whiteSpace: 'nowrap' } })
   },
   mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, marginBottom: 5, position: 'relative', minHeight: 50 },
   titleWrapper: { flex: 1, alignItems: 'center' },
