@@ -9,6 +9,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // --- IMPORT DÁT ---
+// Uisti sa, že súbor songs.js existuje a exportuje pesnickyData
 import { pesnickyData } from './songs'; 
 
 const Tab = createBottomTabNavigator();
@@ -97,6 +98,12 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
+      
+      {/* HORNÉ OLEMOVANIE */}
+      <View style={[styles.folkBorder, { backgroundColor: theme.accent, marginTop: Platform.OS === 'ios' ? 0 : 30 }]}>
+        <Text style={styles.folkPattern}>❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖</Text>
+      </View>
+
       <View style={styles.mainHeader}>
         <View style={styles.titleWrapper}>
           <Text style={[styles.title, { color: theme.accent }]}>{title}</Text>
@@ -120,6 +127,7 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
         value={search}
         clearButtonMode="while-editing"
       />
+      
       <FlatList
         data={filtered}
         keyExtractor={item => item.id.toString()}
@@ -129,6 +137,11 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
         )}
         ListEmptyComponent={<Text style={styles.emptyText}>Nenašli sa žiadne piesne</Text>}
       />
+
+      {/* SPODNÉ OLEMOVANIE (nad menu) */}
+      <View style={[styles.folkBorderBottom, { backgroundColor: theme.accent }]}>
+        <Text style={styles.folkPattern}>❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖</Text>
+      </View>
     </SafeAreaView>
   );
 };
@@ -140,7 +153,7 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // OPRAVA TLAČIDLA SPÄŤ
+  // OPRAVA TLAČIDLA SPÄŤ (Android & Web)
   useEffect(() => {
     const backAction = () => {
       if (vybrana) {
@@ -149,14 +162,26 @@ export default function App() {
       }
       return false; 
     };
+
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    if (Platform.OS === 'web' && vybrana) {
+      window.history.pushState({ detail: true }, '');
+      const handlePopState = () => setVybrana(null);
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        backHandler.remove();
+        window.removeEventListener('popstate', handlePopState);
+      };
+    }
+
     return () => backHandler.remove();
   }, [vybrana]);
 
-  // Web konfigurácia (TU NASTAVUJEME HLAVNÝ NÁZOV STRÁNKY)
+  // Web konfigurácia (Titulok v prehliadači a Font)
   useEffect(() => {
     if (Platform.OS === 'web') {
-      document.title = "Ľudové piesne"; // Toto opraví názov v prehliadači
+      document.title = "Ľudové piesne";
       const fontLink = document.createElement('link');
       fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap';
       fontLink.rel = 'stylesheet';
@@ -204,17 +229,15 @@ export default function App() {
           },
           tabBarActiveTintColor: theme.accent, tabBarInactiveTintColor: '#999',
         }}>
-          {/* ZMENENÝ NÁZOV KARTY Z "Všetky" NA "Ľudové piesne" */}
           <Tab.Screen 
             name="Ľudové piesne" 
             options={{ 
-              tabBarLabel: 'Piesne', // Text pod ikonkou v menu môže zostať krátky
+              tabBarLabel: 'Piesne',
               tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> 
             }}
           >
             {() => <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}
           </Tab.Screen>
-          
           <Tab.Screen 
             name="Obľúbené" 
             options={{ 
@@ -230,26 +253,62 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 20 },
+  container: { flex: 1, paddingHorizontal: 0 },
+  
+  // ŠTÝLY PRE OLEMOVANIE
+  folkBorder: {
+    height: 24,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    marginBottom: 5,
+  },
+  folkBorderBottom: {
+    height: 24,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 95, 
+  },
+  folkPattern: {
+    color: '#fff',
+    fontSize: 16,
+    letterSpacing: 2,
+    fontWeight: 'bold',
+  },
+
+  // HLAVIČKA A TEXTY
   mainHeader: { 
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', 
-    marginTop: Platform.OS === 'ios' ? 10 : 40, marginBottom: 5, position: 'relative', minHeight: 50
+    paddingHorizontal: 20, marginBottom: 5, position: 'relative', minHeight: 50
   },
   titleWrapper: { flex: 1, alignItems: 'center' },
   title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', textAlign: 'center' },
-  modeToggle: { position: 'absolute', right: 5, padding: 10 },
-  quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15 },
+  modeToggle: { position: 'absolute', right: 20, padding: 10 },
+  quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 },
   quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', lineHeight: 22, opacity: 0.8 },
-  searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16 },
-  songCard: { padding: 18, borderRadius: 15, marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2 },
+  
+  searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16, marginHorizontal: 20 },
+  
+  // ZOZNAM
+  songCard: { 
+    padding: 18, borderRadius: 15, marginBottom: 10, marginHorizontal: 20,
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', 
+    elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2 
+  },
   songRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   songTitle: { fontSize: 20, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', fontWeight: '400' },
   miniHeart: { marginLeft: 8 },
   arrow: { fontSize: 18 },
+
+  // DETAIL
   headerControls: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
-  backButton: { paddingRight: 20, paddingVertical: 10 },
+  backButton: { paddingLeft: 20, paddingVertical: 10 },
   backText: { fontSize: 18, fontWeight: 'bold' },
-  rightControls: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  rightControls: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingRight: 20 },
   zoomBtn: { padding: 8, borderRadius: 10, minWidth: 40, alignItems: 'center' },
   detailCard: { borderRadius: 20, padding: 25, elevation: 3, marginTop: 10 },
   detailNazov: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
@@ -257,4 +316,3 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-                         
