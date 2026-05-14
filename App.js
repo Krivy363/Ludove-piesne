@@ -71,8 +71,9 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
         <ScrollView contentContainerStyle={[styles.scrollContent, { paddingHorizontal: 20 }]}>
           {vybrana && (
             <View style={[styles.detailCard, { backgroundColor: theme.card }]}>
-              <Text style={[styles.detailNazov, { color: theme.accent }]}>{vybrana.nazov}</Text>
-              <div style={{height: 1, backgroundColor: theme.border, marginVertical: 15}} />
+              {/* TU JE ZMENA: Farba nadpisu v detaile je teraz theme.text (čierna) */}
+              <Text style={[styles.detailNazov, { color: theme.text }]}>{vybrana.nazov}</Text>
+              <View style={{height: 1, backgroundColor: theme.border, marginVertical: 15}} />
               <Text style={[styles.detailText, { fontSize: fontSize, color: theme.text }]}>{vybrana.text}</Text>
             </View>
           )}
@@ -98,9 +99,15 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       
-      {/* HORNÉ OLEMOVANIE - IBA TU NA VRCHU */}
+      {/* OPRAVENÉ OLEMOVANIE: Teraz vždy v jednom riadku vďaka numberOfLines */}
       <View style={[styles.folkBorder, { backgroundColor: theme.accent, marginTop: Platform.OS === 'ios' ? 0 : 30 }]}>
-        <Text style={styles.folkPattern}>❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖</Text>
+        <Text 
+          style={styles.folkPattern} 
+          numberOfLines={1} 
+          ellipsizeMode="clip"
+        >
+          ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
+        </Text>
       </View>
 
       <View style={styles.mainHeader}>
@@ -147,7 +154,6 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
 
-  // Späť tlačidlo logika
   useEffect(() => {
     const backAction = () => {
       if (vybrana) {
@@ -160,7 +166,6 @@ export default function App() {
     return () => backHandler.remove();
   }, [vybrana]);
 
-  // Web konfigurácia
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
@@ -249,6 +254,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 2,
     fontWeight: 'bold',
+    width: '100%',
+    textAlign: 'center',
   },
   mainHeader: { 
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', 
@@ -280,4 +287,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-          
+    
