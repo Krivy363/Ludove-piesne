@@ -93,7 +93,6 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <View style={[styles.folkBorder, { backgroundColor: theme.accent, marginTop: Platform.OS === 'ios' ? 0 : 30 }]}>
-        {/* Pridali sme ešte viac vzoru pre extrémne široké obrazovky */}
         <Text style={styles.folkPattern} numberOfLines={1}>
           ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
         </Text>
@@ -106,7 +105,7 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
         </TouchableOpacity>
       </View>
 
-      <View style={styles.quoteContainer}><Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ľudové piesne, tam žijú tradície.“</Text></View>
+      <View style={styles.quoteContainer}><Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ljudové piesne, tam žijú tradície.“</Text></View>
       <TextInput 
         style={[styles.searchBar, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]} 
         placeholder="Hľadať pieseň alebo text..." placeholderTextColor="#999" onChangeText={setSearch} value={search} clearButtonMode="while-editing"
@@ -144,9 +143,19 @@ export default function App() {
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
+      
+      // Pridanie fontu
       const fontLink = document.createElement('link');
-      fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap'; fontLink.rel = 'stylesheet';
+      fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap'; 
+      fontLink.rel = 'stylesheet';
       document.head.appendChild(fontLink);
+
+      // --- PRIDANÝ MANIFEST PRE IKONU ---
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = '/manifest.json';
+      document.head.appendChild(manifestLink);
+      // ----------------------------------
     }
     const loadData = async () => { const saved = await AsyncStorage.getItem('@moje_srdiecka'); if (saved) setFavorites(JSON.parse(saved)); };
     loadData();
@@ -183,7 +192,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold', 
     width: '100%', 
     textAlign: 'center',
-    // TU JE TA OPRAVA: Natvrdo povieme webu, aby nepoužíval bodky
     ...Platform.select({
       web: {
         textOverflow: 'clip',
@@ -213,4 +221,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-          
+  
