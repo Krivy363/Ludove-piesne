@@ -99,7 +99,10 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
       </View>
 
       <View style={styles.mainHeader}>
-        <div style={styles.titleWrapper}><Text style={[styles.title, { color: theme.accent }]}>{title}</Text></div>
+        {/* OPRAVENÉ: Použitý View namiesto div a lepšie centrovanie */}
+        <View style={styles.titleWrapper}>
+          <Text style={[styles.title, { color: theme.accent }]}>{title}</Text>
+        </View>
         <TouchableOpacity style={styles.modeToggle} onPress={() => setIsDarkMode(!isDarkMode)}>
           <Text style={{ fontSize: 24 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
         </TouchableOpacity>
@@ -122,6 +125,24 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
   );
 };
 
+// Pomocník pre históriu na webe
+const HistoryManager = ({ navigation }) => {
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const unsubscribe = navigation.addListener('state', (e) => {
+      const routeName = e.data.state.routes[e.data.state.index].name;
+      window.history.pushState({ tab: routeName }, '');
+    });
+    const handlePopState = (event) => {
+      if (event.state && event.state.tab) { navigation.navigate(event.state.tab); }
+      else { navigation.navigate('Ľudové piesne'); }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => { unsubscribe(); window.removeEventListener('popstate', handlePopState); };
+  }, [navigation]);
+  return null;
+};
+
 export default function App() {
   const [vybrana, setVybrana] = useState(null);
   const [favorites, setFavorites] = useState([]);
@@ -131,13 +152,16 @@ export default function App() {
   useEffect(() => {
     const backAction = () => { if (vybrana) { setVybrana(null); return true; } return false; };
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-    if (Platform.OS === 'web') {
-      if (vybrana) window.history.pushState({ detailOpen: true }, '');
+    return () => backHandler.remove();
+  }, [vybrana]);
+
+  useEffect(() => {
+    if (Platform.OS === 'web' && vybrana) {
+      window.history.pushState({ detailOpen: true }, '');
       const handlePopState = () => { if (vybrana) setVybrana(null); };
       window.addEventListener('popstate', handlePopState);
-      return () => { backHandler.remove(); window.removeEventListener('popstate', handlePopState); };
+      return () => window.removeEventListener('popstate', handlePopState);
     }
-    return () => backHandler.remove();
   }, [vybrana]);
 
   useEffect(() => {
@@ -169,8 +193,22 @@ export default function App() {
             tabBarActiveTintColor: theme.accent, 
             tabBarInactiveTintColor: '#999',
         }}>
-          <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>{() => <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}</Tab.Screen>
-          <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>{() => <ListScreen data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}</Tab.Screen>
+          <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
+            {({ navigation }) => (
+              <>
+                <HistoryManager navigation={navigation} />
+                <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+              </>
+            )}
+          </Tab.Screen>
+          <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
+            {({ navigation }) => (
+              <>
+                <HistoryManager navigation={navigation} />
+                <ListScreen data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+              </>
+            )}
+          </Tab.Screen>
         </Tab.Navigator>
       </View>
     </NavigationContainer>
@@ -184,10 +222,26 @@ const styles = StyleSheet.create({
     color: '#fff', fontSize: 16, letterSpacing: 2, fontWeight: 'bold', width: '100%', textAlign: 'center',
     ...Platform.select({ web: { textOverflow: 'clip', whiteSpace: 'nowrap' } })
   },
-  mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, marginBottom: 5, position: 'relative', minHeight: 50 },
-  titleWrapper: { flex: 1, alignItems: 'center' },
-  title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', textAlign: 'center' },
-  modeToggle: { position: 'absolute', right: 20, padding: 10 },
+  mainHeader: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    paddingHorizontal: 20, 
+    marginBottom: 5, 
+    minHeight: 60 
+  },
+  titleWrapper: { 
+    flex: 1, 
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  title: { 
+    fontSize: 34, 
+    fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', 
+    textAlign: 'center',
+    marginLeft: 40 // Kompenzácia pre ikonu mesiaca vpravo, aby bol text presne v strede
+  },
+  modeToggle: { padding: 10 },
   quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 },
   quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', opacity: 0.8 },
   searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16, marginHorizontal: 20 },
@@ -206,4 +260,5 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-          
+```</View>
+  
