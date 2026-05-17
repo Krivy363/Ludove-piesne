@@ -132,64 +132,55 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
   const [search, setSearch] = useState('');
-  
-  // NOVÝ STAV: Zapamätá si, či sme pesničku otvorili cez vyhľadávanie
   const [otvoreneZHladania, setOtvoreneZHladania] = useState(false);
-
-  const vybranaRef = useRef(vybrana);
-  const searchRef = useRef(search);
-  const otvoreneZHladaniaRef = useRef(otvoreneZHladania);
-
-  useEffect(() => { vybranaRef.current = vybrana; }, [vybrana]);
-  useEffect(() => { searchRef.current = search; }, [search]);
-  useEffect(() => { otvoreneZHladaniaRef.current = otvoreneZHladania; }, [otvoreneZHladania]);
 
   // Funkcia na otvorenie detailu piesne
   const otvorDetail = useCallback((item) => {
-    if (searchRef.current.length > 0) {
-      setOtvoreneZHladania(true); // Ak sa hľadalo, zaznačíme to
+    if (search.length > 0) {
+      setOtvoreneZHladania(true);
     } else {
-      setOtvoreneZHladania(false); // Ak sa nehľadalo, je to priamy výber
+      setOtvoreneZHladania(false);
     }
     setVybrana(item);
-  }, []);
+  }, [search]);
 
-  // Funkcia na zatvorenie (využitá aj pri tlačidle späť na displeji)
+  // Funkcia na zatvorenie (využitá na softvérovom tlačidle "Späť" na displeji)
   const zatvorDetail = useCallback(() => {
     setVybrana(null);
-    // Ak sme neotvárali z hľadania, rovno vymažeme aj prípadný zostatkový text (pre istotu)
-    if (!otvoreneZHladaniaRef.current) {
+    if (!otvoreneZHladania) {
       setSearch('');
     }
-  }, []);
+  }, [otvoreneZHladania]);
 
-  // 1. HARDVÉROVÉ TLAČIDLO SPÄŤ (Android / iOS)
+  // HARDVÉROVÉ / SYSTÉMOVÉ TLAČIDLO SPÄŤ MOBILU
   useEffect(() => {
     const backAction = () => { 
-      // KROK 1: Ak je otvorený detail
-      if (vybranaRef.current) { 
+      // 1. Ak máme otvorenú pesničku
+      if (vybrana) { 
         setVybrana(null);
-        // Ak sme neotvorili z hľadania, rovno zmažeme text (ak tam nejaký bol)
-        if (!otvoreneZHladaniaRef.current) {
+        // Ak sme ju neotvorili cez vyhľadávanie, rovno čistíme aj text
+        if (!otvoreneZHladania) {
           setSearch('');
         }
-        return true; 
+        return true; // Zostávame v apke
       } 
       
-      // KROK 2: Ak je detail zatvorený, ale v hľadaní niečo zostalo
-      if (searchRef.current.length > 0) {
+      // 2. Ak je pesnička zavretá, ale v vyhľadávaní niečo svieti
+      if (search.length > 0) {
         setSearch('');
         setOtvoreneZHladania(false);
-        return true; 
+        return true; // Zostávame v apke
       }
-      return false; 
+
+      return false; // Ak je všetko čisté, systém vykoná bežný odchod z apky
     };
     
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => backHandler.remove();
-  }, []);
+  }, [vybrana, search, otvoreneZHladania]); // Správne závislosti zaistia okamžitú reakciu na zmenu stavu
 
-  // 2. WEB: PODPORA PRE ŠÍPKU SPÄŤ V PREHLIADAČI
+
+  // PODPORA PRE WEBOVÝ PREHLIADAČ
   useEffect(() => {
     if (Platform.OS !== 'web') return;
 
@@ -198,12 +189,10 @@ export default function App() {
     }
 
     const handlePopState = () => {
-      if (vybranaRef.current) {
+      if (vybrana) {
         setVybrana(null);
-        if (!otvoreneZHladaniaRef.current) {
-          setSearch('');
-        }
-      } else if (searchRef.current.length > 0) {
+        if (!otvoreneZHladania) setSearch('');
+      } else if (search.length > 0) {
         setSearch('');
         setOtvoreneZHladania(false);
       }
@@ -211,7 +200,7 @@ export default function App() {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [vybrana, search.length > 0]);
+  }, [vybrana, search, otvoreneZHladania]);
 
   useEffect(() => {
     if (Platform.OS === 'web') {
@@ -287,4 +276,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-                                                                                       
+  
