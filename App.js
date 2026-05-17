@@ -82,7 +82,7 @@ const DetailView = ({ vybrana, zatvorDetail, theme, favorites, toggleFavorite, f
   );
 };
 
-const ListScreen = ({ data, title, theme, favorites, otvorDetail, isDarkMode, setIsDarkMode, search, setSearch }) => {
+const ListScreen = ({ data, title, theme, favorites, otvorDetail, isDarkMode, setIsDarkMode, search, aktualizujHladanie }) => {
   const filtered = useMemo(() => {
     const term = bezDiakritiky(search);
     return data.filter(p => !term || bezDiakritiky(p.nazov).includes(term) || bezDiakritiky(p.text).includes(term))
@@ -104,13 +104,13 @@ const ListScreen = ({ data, title, theme, favorites, otvorDetail, isDarkMode, se
         </TouchableOpacity>
       </View>
 
-      <View style={styles.quoteContainer}><Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ľudové piesne, tam žijú tradície.“</Text></View>
+      <View style={styles.quoteContainer}><Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ljudové piesne, tam žijú tradície.“</Text></View>
       
       <TextInput 
         style={[styles.searchBar, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]} 
         placeholder="Hľadať pieseň alebo text..." 
         placeholderTextColor="#999" 
-        onChangeText={setSearch} 
+        onChangeText={aktualizujHladanie} 
         value={search} 
         clearButtonMode="while-editing"
       />
@@ -134,73 +134,100 @@ export default function App() {
   const [search, setSearch] = useState('');
   const [otvoreneZHladania, setOtvoreneZHladania] = useState(false);
 
-  // Funkcia na otvorenie detailu piesne
+  const vybranaRef = useRef(vybrana);
+  const searchRef = useRef(search);
+  const otvoreneZHladaniaRef = useRef(otvoreneZHladania);
+
+  useEffect(() => { vybranaRef.current = vybrana; }, [vybrana]);
+  useEffect(() => { searchRef.current = search; }, [search]);
+  useEffect(() => { otvoreneZHladaniaRef.current = otvoreneZHladania; }, [otvoreneZHladania]);
+
+  // WEB AJ MOBIL: Riadenie histórie pri písaní textu
+  const aktualizujHladanie = useCallback((text) => {
+    if (Platform.OS === 'web') {
+      // Ak začíname písať do prázdneho poľa, pridáme bod do histórie
+      if (searchRef.current === '' && text !== '') {
+        window.location.hash = 'search';
+      } 
+      // Ak pole úplne vymažeme manuálne, odstránime hash bez kroku späť
+      else if (text === '') {
+        window.history.replaceState(null, '', ' ');
+      }
+    }
+    setSearch(text);
+  }, []);
+
   const otvorDetail = useCallback((item) => {
-    if (search.length > 0) {
+    if (searchRef.current.length > 0) {
       setOtvoreneZHladania(true);
+      if (Platform.OS === 'web') {
+        window.location.hash = 'detail-search';
+      }
     } else {
       setOtvoreneZHladania(false);
+      if (Platform.OS === 'web') {
+        window.location.hash = 'detail';
+      }
     }
     setVybrana(item);
-  }, [search]);
+  }, []);
 
-  // Funkcia na zatvorenie (využitá na softvérovom tlačidle "Späť" na displeji)
   const zatvorDetail = useCallback(() => {
     setVybrana(null);
-    if (!otvoreneZHladania) {
+    if (!otvoreneZHladaniaRef.current) {
       setSearch('');
+      if (Platform.OS === 'web') window.history.replaceState(null, '', ' ');
+    } else {
+      if (Platform.OS === 'web') window.location.hash = 'search';
     }
-  }, [otvoreneZHladania]);
+  }, []);
 
-  // HARDVÉROVÉ / SYSTÉMOVÉ TLAČIDLO SPÄŤ MOBILU
+  // 1. KÓD PRE MOBILNÝ ANDROID (Hardvérové tlačidlo späť)
   useEffect(() => {
-    const backAction = () => { 
-      // 1. Ak máme otvorenú pesničku
-      if (vybrana) { 
+    const backAction = () => {
+      if (vybranaRef.current) {
         setVybrana(null);
-        // Ak sme ju neotvorili cez vyhľadávanie, rovno čistíme aj text
-        if (!otvoreneZHladania) {
+        if (!otvoreneZHladaniaRef.current) {
           setSearch('');
         }
-        return true; // Zostávame v apke
-      } 
-      
-      // 2. Ak je pesnička zavretá, ale v vyhľadávaní niečo svieti
-      if (search.length > 0) {
+        return true; 
+      }
+      if (searchRef.current.length > 0) {
         setSearch('');
         setOtvoreneZHladania(false);
-        return true; // Zostávame v apke
+        return true; 
       }
-
-      return false; // Ak je všetko čisté, systém vykoná bežný odchod z apky
+      return false; 
     };
-    
+
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => backHandler.remove();
-  }, [vybrana, search, otvoreneZHladania]); // Správne závislosti zaistia okamžitú reakciu na zmenu stavu
+  }, []);
 
-
-  // PODPORA PRE WEBOVÝ PREHLIADAČ
+  // 2. KÓD PRE WEBOVÝ PREHLIADAČ (Šípka späť na webe)
   useEffect(() => {
     if (Platform.OS !== 'web') return;
 
-    if (vybrana || search.length > 0) {
-      window.history.pushState({ isAppControlled: true }, '');
-    }
+    const handleHashChange = () => {
+      const hash = window.location.hash;
 
-    const handlePopState = () => {
-      if (vybrana) {
+      // Ak bol otvorený detail a používateľ stlačil späť
+      if (vybranaRef.current && !hash.includes('detail')) {
         setVybrana(null);
-        if (!otvoreneZHladania) setSearch('');
-      } else if (search.length > 0) {
+        if (!otvoreneZHladaniaRef.current) {
+          setSearch('');
+        }
+      } 
+      // Ak bol detail zatvorený, sme na zozname a zmazal sa hash 'search'
+      else if (!vybranaRef.current && searchRef.current.length > 0 && hash !== '#search') {
         setSearch('');
         setOtvoreneZHladania(false);
       }
     };
 
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [vybrana, search, otvoreneZHladania]);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   useEffect(() => {
     if (Platform.OS === 'web') {
@@ -236,10 +263,10 @@ export default function App() {
           tabBarInactiveTintColor: '#999',
         }}>
           <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
-            {props => <ListScreen {...props} data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
+            {props => <ListScreen {...props} data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
           </Tab.Screen>
           <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
-            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
+            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
           </Tab.Screen>
         </Tab.Navigator>
       </View>
