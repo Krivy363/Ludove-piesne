@@ -30,7 +30,7 @@ const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
   </TouchableOpacity>
 ));
 
-const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fontSize, setFontSize }) => {
+const DetailView = ({ vybrana, zatvorDetail, theme, favorites, toggleFavorite, fontSize, setFontSize }) => {
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   const [isVisible, setIsVisible] = useState(false);
 
@@ -51,7 +51,7 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
     <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: theme.bg, zIndex: 9999, transform: [{ translateY: slideAnim }] }]}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={[styles.headerControls, { borderBottomColor: theme.border, paddingHorizontal: 20 }]}>
-          <TouchableOpacity onPress={() => setVybrana(null)} style={styles.backButton}>
+          <TouchableOpacity onPress={zatvorDetail} style={styles.backButton}>
             <Text style={[styles.backText, { color: theme.accent }]}>← Späť</Text>
           </TouchableOpacity>
           <View style={styles.rightControls}>
@@ -82,7 +82,7 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
   );
 };
 
-const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, setIsDarkMode, search, setSearch }) => {
+const ListScreen = ({ data, title, theme, favorites, otvorDetail, isDarkMode, setIsDarkMode, search, setSearch }) => {
   const filtered = useMemo(() => {
     const term = bezDiakritiky(search);
     return data.filter(p => !term || bezDiakritiky(p.nazov).includes(term) || bezDiakritiky(p.text).includes(term))
@@ -119,7 +119,7 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
         data={filtered}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={{ paddingBottom: 150 }} 
-        renderItem={({ item }) => <SongItem item={item} isFavorite={favorites.includes(item.id)} onPress={setVybrana} theme={theme} />}
+        renderItem={({ item }) => <SongItem item={item} isFavorite={favorites.includes(item.id)} onPress={otvorDetail} theme={theme} />}
         ListEmptyComponent={<Text style={styles.emptyText}>Nenašli sa žiadne piesne</Text>}
       />
     </SafeAreaView>
@@ -132,56 +132,87 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
   const [search, setSearch] = useState('');
+  
+  // NOVÝ STAV: Zapamätá si, či sme pesničku otvorili cez vyhľadávanie
+  const [otvoreneZHladania, setOtvoreneZHladania] = useState(false);
 
-  // Použijeme referencie, aby mal useEffect vždy najaktuálnejšie hodnoty bez neustáleho prebíjania event listenerov
   const vybranaRef = useRef(vybrana);
   const searchRef = useRef(search);
+  const otvoreneZHladaniaRef = useRef(otvoreneZHladania);
 
   useEffect(() => { vybranaRef.current = vybrana; }, [vybrana]);
   useEffect(() => { searchRef.current = search; }, [search]);
+  useEffect(() => { otvoreneZHladaniaRef.current = otvoreneZHladania; }, [otvoreneZHladania]);
+
+  // Funkcia na otvorenie detailu piesne
+  const otvorDetail = useCallback((item) => {
+    if (searchRef.current.length > 0) {
+      setOtvoreneZHladania(true); // Ak sa hľadalo, zaznačíme to
+    } else {
+      setOtvoreneZHladania(false); // Ak sa nehľadalo, je to priamy výber
+    }
+    setVybrana(item);
+  }, []);
+
+  // Funkcia na zatvorenie (využitá aj pri tlačidle späť na displeji)
+  const zatvorDetail = useCallback(() => {
+    setVybrana(null);
+    // Ak sme neotvárali z hľadania, rovno vymažeme aj prípadný zostatkový text (pre istotu)
+    if (!otvoreneZHladaniaRef.current) {
+      setSearch('');
+    }
+  }, []);
 
   // 1. HARDVÉROVÉ TLAČIDLO SPÄŤ (Android / iOS)
   useEffect(() => {
     const backAction = () => { 
+      // KROK 1: Ak je otvorený detail
       if (vybranaRef.current) { 
-        setVybrana(null); 
+        setVybrana(null);
+        // Ak sme neotvorili z hľadania, rovno zmažeme text (ak tam nejaký bol)
+        if (!otvoreneZHladaniaRef.current) {
+          setSearch('');
+        }
         return true; 
       } 
+      
+      // KROK 2: Ak je detail zatvorený, ale v hľadaní niečo zostalo
       if (searchRef.current.length > 0) {
         setSearch('');
+        setOtvoreneZHladania(false);
         return true; 
       }
       return false; 
     };
+    
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => backHandler.remove();
   }, []);
 
-  // 2. WEB: RIADENIE HISTÓRIE PREHLIADAČA (Šípka späť v Chrome, Safari, atď.)
+  // 2. WEB: PODPORA PRE ŠÍPKU SPÄŤ V PREHLIADAČI
   useEffect(() => {
     if (Platform.OS !== 'web') return;
 
-    // Zakaždým, keď sa zmení text alebo otvorí detail, povieme prehliadaču, že sme na "novej podstránke"
     if (vybrana || search.length > 0) {
       window.history.pushState({ isAppControlled: true }, '');
     }
 
-    const handlePopState = (event) => {
-      // Ak bol otvorený detail, zatvoríme ho
+    const handlePopState = () => {
       if (vybranaRef.current) {
         setVybrana(null);
-      } 
-      // Ak bol detail zatvorený, ale hľadalo sa, vymažeme text
-      else if (searchRef.current.length > 0) {
+        if (!otvoreneZHladaniaRef.current) {
+          setSearch('');
+        }
+      } else if (searchRef.current.length > 0) {
         setSearch('');
+        setOtvoreneZHladania(false);
       }
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [vybrana, search.length > 0]); // Reaguje na zmenu detailu a na to, či je vyhľadávanie prázdne/plné
+  }, [vybrana, search.length > 0]);
 
-  // Načítanie webových vecí (Fonty, Titulok, Manifest)
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
@@ -207,7 +238,7 @@ export default function App() {
     <NavigationContainer>
       <View style={{ flex: 1, backgroundColor: theme.bg }}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <DetailView vybrana={vybrana} setVybrana={setVybrana} theme={theme} favorites={favorites} toggleFavorite={toggleFavorite} fontSize={fontSize} setFontSize={setFontSize}/>
+        <DetailView vybrana={vybrana} zatvorDetail={zatvorDetail} theme={theme} favorites={favorites} toggleFavorite={toggleFavorite} fontSize={fontSize} setFontSize={setFontSize}/>
         
         <Tab.Navigator screenOptions={{ 
           headerShown: false, 
@@ -216,10 +247,10 @@ export default function App() {
           tabBarInactiveTintColor: '#999',
         }}>
           <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
-            {props => <ListScreen {...props} data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
+            {props => <ListScreen {...props} data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
           </Tab.Screen>
           <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
-            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
+            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
           </Tab.Screen>
         </Tab.Navigator>
       </View>
@@ -256,4 +287,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-            
+                                                                                       
