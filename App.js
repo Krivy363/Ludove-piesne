@@ -82,8 +82,8 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
   );
 };
 
-const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, setIsDarkMode }) => {
-  const [search, setSearch] = useState('');
+// Zmeny v ListScreen: search a setSearch prichádzajú cez props z App.js
+const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, setIsDarkMode, search, setSearch }) => {
   const filtered = useMemo(() => {
     const term = bezDiakritiky(search);
     return data.filter(p => !term || bezDiakritiky(p.nazov).includes(term) || bezDiakritiky(p.text).includes(term))
@@ -127,35 +127,57 @@ export default function App() {
   const [favorites, setFavorites] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
+  
+  // STAV VYHĽADÁVANIA PRESUNUTÝ SEM, ABY SME HO VEDELI VYMAZAŤ CEZ "SPÄŤ"
+  const [search, setSearch] = useState('');
 
+  // SPOLOČNÁ LOGIKA PRE SPÄTNÉ TLAČIDLO (Android & Web)
   useEffect(() => {
-    const backAction = () => { if (vybrana) { setVybrana(null); return true; } return false; };
+    const backAction = () => { 
+      // 1. Ak je otvorený detail, zatvor ho
+      if (vybrana) { 
+        setVybrana(null); 
+        return true; 
+      } 
+      // 2. Ak je detail zatvorený, ale vo vyhľadávaní niečo je, vymaž to
+      if (search.length > 0) {
+        setSearch('');
+        return true; // Zastaví zatvorenie aplikácie
+      }
+      return false; // Ak je všetko prázdne, vykoná sa bežné späť (vypnutie apky/odchod)
+    };
+
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
     if (Platform.OS === 'web') {
-      if (vybrana) window.history.pushState({ detailOpen: true }, '');
-      const handlePopState = () => { if (vybrana) setVybrana(null); };
+      if (vybrana || search.length > 0) {
+        window.history.pushState({ detailOpen: true }, '');
+      }
+      const handlePopState = () => { 
+        if (vybrana) {
+          setVybrana(null);
+        } else if (search.length > 0) {
+          setSearch('');
+        }
+      };
       window.addEventListener('popstate', handlePopState);
       return () => { backHandler.remove(); window.removeEventListener('popstate', handlePopState); };
     }
+
     return () => backHandler.remove();
-  }, [vybrana]);
+  }, [vybrana, search]); // Sledujeme vybrana aj search
 
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
-      
-      // Pridanie fontu
       const fontLink = document.createElement('link');
-      fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap'; 
-      fontLink.rel = 'stylesheet';
+      fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap'; fontLink.rel = 'stylesheet';
       document.head.appendChild(fontLink);
 
-      // --- PRIDANÝ MANIFEST PRE IKONU ---
       const manifestLink = document.createElement('link');
       manifestLink.rel = 'manifest';
       manifestLink.href = '/manifest.json';
       document.head.appendChild(manifestLink);
-      // ----------------------------------
     }
     const loadData = async () => { const saved = await AsyncStorage.getItem('@moje_srdiecka'); if (saved) setFavorites(JSON.parse(saved)); };
     loadData();
@@ -174,8 +196,13 @@ export default function App() {
         <Tab.Navigator screenOptions={{ 
           headerShown: false, tabBarStyle: { backgroundColor: theme.card, borderTopColor: 'transparent', height: 65, marginBottom: Platform.OS === 'ios' ? 30 : 20, marginHorizontal: 30, borderRadius: 40, position: 'absolute', elevation: 12 }, tabBarActiveTintColor: theme.accent, tabBarInactiveTintColor: '#999',
         }}>
-          <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>{() => <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}</Tab.Screen>
-          <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>{() => <ListScreen data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />}</Tab.Screen>
+          {/* Do ListScreen posielame search a setSearch ako props */}
+          <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
+            {() => <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
+          </Tab.Screen>
+          <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
+            {() => <ListScreen data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
+          </Tab.Screen>
         </Tab.Navigator>
       </View>
     </NavigationContainer>
@@ -221,4 +248,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-  
+          
