@@ -82,7 +82,6 @@ const DetailView = ({ vybrana, setVybrana, theme, favorites, toggleFavorite, fon
   );
 };
 
-// Zmeny v ListScreen: search a setSearch prichádzajú cez props z App.js
 const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, setIsDarkMode, search, setSearch }) => {
   const filtered = useMemo(() => {
     const term = bezDiakritiky(search);
@@ -106,9 +105,14 @@ const ListScreen = ({ data, title, theme, favorites, setVybrana, isDarkMode, set
       </View>
 
       <View style={styles.quoteContainer}><Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ľudové piesne, tam žijú tradície.“</Text></View>
+      
       <TextInput 
         style={[styles.searchBar, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]} 
-        placeholder="Hľadať pieseň alebo text..." placeholderTextColor="#999" onChangeText={setSearch} value={search} clearButtonMode="while-editing"
+        placeholder="Hľadať pieseň alebo text..." 
+        placeholderTextColor="#999" 
+        onChangeText={setSearch} 
+        value={search} 
+        clearButtonMode="while-editing"
       />
       
       <FlatList
@@ -127,37 +131,32 @@ export default function App() {
   const [favorites, setFavorites] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
-  
-  // STAV VYHĽADÁVANIA PRESUNUTÝ SEM, ABY SME HO VEDELI VYMAZAŤ CEZ "SPÄŤ"
   const [search, setSearch] = useState('');
 
-  // SPOLOČNÁ LOGIKA PRE SPÄTNÉ TLAČIDLO (Android & Web)
+  // Správne naviazanie hardvérového tlačidla Späť
   useEffect(() => {
     const backAction = () => { 
-      // 1. Ak je otvorený detail, zatvor ho
       if (vybrana) { 
         setVybrana(null); 
         return true; 
       } 
-      // 2. Ak je detail zatvorený, ale vo vyhľadávaní niečo je, vymaž to
       if (search.length > 0) {
         setSearch('');
-        return true; // Zastaví zatvorenie aplikácie
+        return true; 
       }
-      return false; // Ak je všetko prázdne, vykoná sa bežné späť (vypnutie apky/odchod)
+      return false; 
     };
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     if (Platform.OS === 'web') {
-      if (vybrana || search.length > 0) {
-        window.history.pushState({ detailOpen: true }, '');
-      }
       const handlePopState = () => { 
         if (vybrana) {
           setVybrana(null);
+          window.history.pushState({ detailOpen: false }, '');
         } else if (search.length > 0) {
           setSearch('');
+          window.history.pushState({ detailOpen: false }, '');
         }
       };
       window.addEventListener('popstate', handlePopState);
@@ -165,7 +164,14 @@ export default function App() {
     }
 
     return () => backHandler.remove();
-  }, [vybrana, search]); // Sledujeme vybrana aj search
+  }, [vybrana, search]);
+
+  // Pushovanie histórie pri zmene vyhľadávania alebo výberu (iba pre web)
+  useEffect(() => {
+    if (Platform.OS === 'web' && (vybrana || search.length > 0)) {
+      window.history.pushState({ detailOpen: true }, '');
+    }
+  }, [vybrana, search]);
 
   useEffect(() => {
     if (Platform.OS === 'web') {
@@ -193,15 +199,19 @@ export default function App() {
       <View style={{ flex: 1, backgroundColor: theme.bg }}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
         <DetailView vybrana={vybrana} setVybrana={setVybrana} theme={theme} favorites={favorites} toggleFavorite={toggleFavorite} fontSize={fontSize} setFontSize={setFontSize}/>
+        
         <Tab.Navigator screenOptions={{ 
-          headerShown: false, tabBarStyle: { backgroundColor: theme.card, borderTopColor: 'transparent', height: 65, marginBottom: Platform.OS === 'ios' ? 30 : 20, marginHorizontal: 30, borderRadius: 40, position: 'absolute', elevation: 12 }, tabBarActiveTintColor: theme.accent, tabBarInactiveTintColor: '#999',
+          headerShown: false, 
+          tabBarStyle: { backgroundColor: theme.card, borderTopColor: 'transparent', height: 65, marginBottom: Platform.OS === 'ios' ? 30 : 20, marginHorizontal: 30, borderRadius: 40, position: 'absolute', elevation: 12 }, 
+          tabBarActiveTintColor: theme.accent, 
+          tabBarInactiveTintColor: '#999',
         }}>
-          {/* Do ListScreen posielame search a setSearch ako props */}
+          {/* STABILNÉ ODOVZDÁVANIE KOMPONENTOV CEZ CHILDREN VZOR */}
           <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
-            {() => <ListScreen data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
+            {props => <ListScreen {...props} data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
           </Tab.Screen>
           <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
-            {() => <ListScreen data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
+            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} setVybrana={setVybrana} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} setSearch={setSearch} />}
           </Tab.Screen>
         </Tab.Navigator>
       </View>
@@ -213,18 +223,8 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   folkBorder: { height: 24, width: '100%', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', marginBottom: 5 },
   folkPattern: { 
-    color: '#fff', 
-    fontSize: 16, 
-    letterSpacing: 2, 
-    fontWeight: 'bold', 
-    width: '100%', 
-    textAlign: 'center',
-    ...Platform.select({
-      web: {
-        textOverflow: 'clip',
-        whiteSpace: 'nowrap',
-      }
-    })
+    color: '#fff', fontSize: 16, letterSpacing: 2, fontWeight: 'bold', width: '100%', textAlign: 'center',
+    ...Platform.select({ web: { textOverflow: 'clip', whiteSpace: 'nowrap' } })
   },
   mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, marginBottom: 5, position: 'relative', minHeight: 50 },
   titleWrapper: { flex: 1, alignItems: 'center' },
@@ -248,4 +248,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-          
+  
