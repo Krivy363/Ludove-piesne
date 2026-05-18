@@ -27,7 +27,7 @@ const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
   >
     <View style={styles.songRow}>
       <Text style={[styles.songTitle, { color: theme.text }]}>{item.nazov}</Text>
-      {isFavorite && <Text style={styles.miniHeart}>❤️</Text>}
+      {isFavorite && <Text style={{ fontSize: 16, marginLeft: 8 }}>❤️</Text>}
     </View>
     <Text style={[styles.arrow, { color: theme.accent }]}>〉</Text>
   </TouchableOpacity>
@@ -156,7 +156,7 @@ export default function App() {
     setSearch(text);
   }, []);
 
-  const打开Detail = (item) => {
+  const otvorDetail = useCallback((item) => {
     if (searchRef.current.length > 0) {
       setOtvoreneZHladania(true);
       if (Platform.OS === 'web') window.location.hash = 'detail-search';
@@ -165,7 +165,7 @@ export default function App() {
       if (Platform.OS === 'web') window.location.hash = 'detail';
     }
     setVybrana(item);
-  };
+  }, []);
 
   const zatvorDetail = useCallback(() => {
     setVybrana(null);
@@ -194,16 +194,16 @@ export default function App() {
         return true; 
       }
 
-      // 3. NOVÉ: Ak sme na karte „Obľúbené“, prejdeme na hlavnú kartu „Ľudové piesne“
+      // 3. Ak sme na karte „Obľúbené“, prejdeme na hlavnú kartu „Ľudové piesne“
       if (navigationRef.isReady()) {
         const currentRoute = navigationRef.getCurrentRoute();
         if (currentRoute && currentRoute.name === 'Obľúbené') {
           navigationRef.navigate('Ľudové piesne');
-          return true; // Stopne opustenie aplikácie, iba prepne kartu
+          return true; 
         }
       }
 
-      return false; // Ak sme na hlavnej stránke a všetko je čisté, apka sa zavrie
+      return false; 
     };
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -234,7 +234,7 @@ export default function App() {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
       const fontLink = document.createElement('link');
-      fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap'; fontLink.rel = 'stylesheet';
+      fontLink.href = '[https://fonts.googleapis.com/css2?family=Lobster&display=swap](https://fonts.googleapis.com/css2?family=Lobster&display=swap)'; fontLink.rel = 'stylesheet';
       document.head.appendChild(fontLink);
     }
     const loadData = async () => { const saved = await AsyncStorage.getItem('@moje_srdiecka'); if (saved) setFavorites(JSON.parse(saved)); };
@@ -259,10 +259,10 @@ export default function App() {
           tabBarInactiveTintColor: '#999',
         }}>
           <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
-            {props => <ListScreen {...props} data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} otvorDetail={打开Detail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
+            {props => <ListScreen {...props} data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
           </Tab.Screen>
           <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
-            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} otvorDetail={打开Detail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
+            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
           </Tab.Screen>
         </Tab.Navigator>
       </View>
@@ -299,3 +299,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
+                      
