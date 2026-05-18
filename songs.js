@@ -330,9 +330,7 @@ export const pesnickyData = [
 
 4. [:Frajárečky štyri, prečo ste sa bili,:][:pre teba šuhajko, že sme ťa ľúbili.:]
 
-5. [:Frajárečky štyri, pre mňa sa nebite,:][:jednu z vás zoberiem, tri ostať musíte.:]
-
-6. [:Frajárečky štyri, pre mňa sa nebite,:][:však vy ani jedna moja nebudete.:]`
+5. [:Frajárečky štyri, pre mňa sa nebite,:][:však vy ani jedna moja nebudete.:]`
   },
   {
     id: '29',
@@ -365,7 +363,11 @@ export const pesnickyData = [
 
 Refr.: Má roztomilá Maruško, pojď si se mnou na lůžko, má roztomilá Maruško, pojď už se mnou spát.
 
-3. Sekera, motyka, rýl a klešte, daj mi milá, daj mi ješte, sekera, motyka, rýl a klešte, daj mi ješte raz.`
+3. Nevemu, nevemu ty si prase, včera si chcel dneska zase, nevemu, nevemu ty si prase, včera si chcel dneska zas.
+
+Refr.: Má roztomilá Maruško, pojď si se mnou na lůžko, má roztomilá Maruško, pojď už se mnou spát.
+
+4. Sekera, motyka, rýl a klešte, daj mi milá, daj mi ješte, sekera, motyka, rýl a klešte, daj mi ješte raz.`
   },
   {
     id: '32',
