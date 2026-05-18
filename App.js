@@ -102,7 +102,7 @@ const ListScreen = ({ data, title, theme, favorites, otvorDetail, isDarkMode, se
 
       <View style={styles.mainHeader}>
         <View style={styles.titleWrapper}>
-          {/* NÁZOV STRÁNKY JE TERAZ PEVNE STANOVENÝ NA ĽUDOVÉ PIESNE */}
+          {/* Tu svieti stály nadpis na webe aj v apke */}
           <Text style={[styles.title, { color: theme.accent }]}>Ľudové piesne</Text>
         </View>
         <TouchableOpacity style={styles.modeToggle} onPress={() => setIsDarkMode(!isDarkMode)}>
@@ -181,7 +181,7 @@ export default function App() {
     }
   }, []);
 
-  // 1. KÓD PRE HARDVÉROVÉ TLAČIDLO SPÄŤ (Mobil + ošetrenie histórie kariet)
+  // 1. KÓD PRE HARDVÉROVÉ TLAČIDLO SPÄŤ (Mobil)
   useEffect(() => {
     const backAction = () => {
       if (vybranaRef.current) {
@@ -195,9 +195,11 @@ export default function App() {
         return true; 
       }
 
-      // Ak sme na karte Obľúbené (FavoritesTab), tlačidlo späť nás vráti na hlavnú kartu Piesne
       if (navigationRef.isReady()) {
         const aktuálnaTrasa = navigationRef.getCurrentRoute();
+        if (aktuálnaTrasa && aktuálnaTrasa.name === 'SongsTab') {
+          return false; // Ak sme na hlavnej, vypne apku
+        }
         if (aktuálnaTrasa && aktuálnaTrasa.name === 'FavoritesTab') {
           navigationRef.navigate('SongsTab');
           if (Platform.OS === 'web') window.history.replaceState(null, '', ' ');
@@ -211,7 +213,7 @@ export default function App() {
     return () => backHandler.remove();
   }, []);
 
-  // 2. KÓD PRE WEBOVÝ PREHLIADAČ (Sledovanie zmien URL a hashov)
+  // 2. KÓD PRE WEBOVÝ PREHLIADAČ
   useEffect(() => {
     if (Platform.OS !== 'web') return;
 
@@ -226,7 +228,6 @@ export default function App() {
         setSearch('');
         setOtvoreneZHladania(false);
       }
-      // Ak používateľ stlačí späť na webe z obľúbených kariet bez hashov
       else if (hash === '' && navigationRef.isReady()) {
         const aktuálnaTrasa = navigationRef.getCurrentRoute();
         if (aktuálnaTrasa && aktuálnaTrasa.name === 'FavoritesTab') {
@@ -272,10 +273,13 @@ export default function App() {
           tabBarActiveTintColor: theme.accent, 
           tabBarInactiveTintColor: '#999',
         }}>
-          {/* Názvy trás (name) sú upravené ako ID, aby sa nebili s textom hlavičky */}
           <Tab.Screen 
             name="SongsTab" 
-            options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}
+            options={{ 
+              title: 'Ľudové piesne', // TU NÚTIME NAVIGÁCIU ZOBRAZOVAŤ SPRÁVNY NÁZOV
+              tabBarLabel: 'Piesne', 
+              tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> 
+            }}
             listeners={{
               tabPress: () => {
                 if (Platform.OS === 'web') window.history.replaceState(null, '', ' ');
@@ -287,7 +291,11 @@ export default function App() {
           
           <Tab.Screen 
             name="FavoritesTab" 
-            options={{ tabBarLabel: 'Obľúbené', tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}
+            options={{ 
+              title: 'Ľudové piesne', // TU NÚTIME NAVIGÁCIU ZOBRAZOVAŤ SPRÁVNY NÁZOV
+              tabBarLabel: 'Obľúbené', 
+              tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> 
+            }}
             listeners={{
               tabPress: () => {
                 if (Platform.OS === 'web') window.location.hash = 'favorites';
@@ -331,4 +339,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-  
+          
