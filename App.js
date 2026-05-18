@@ -13,7 +13,7 @@ import { pesnickyData } from './songs';
 const Tab = createBottomTabNavigator();
 const { height: screenHeight } = Dimensions.get('window');
 
-// VYTVORENIE REFERENCIE PRE NAVIGÁCIU (Nutné pre funkčnosť tlačidla späť)
+// Referencia pre spoľahlivé riadenie navigácie spredu aj zozadu
 const navigationRef = createNavigationContainerRef();
 
 const bezDiakritiky = (str) => {
@@ -101,7 +101,10 @@ const ListScreen = ({ data, title, theme, favorites, otvorDetail, isDarkMode, se
       </View>
 
       <View style={styles.mainHeader}>
-        <View style={styles.titleWrapper}><Text style={[styles.title, { color: theme.accent }]}>{title}</Text></View>
+        <View style={styles.titleWrapper}>
+          {/* NÁZOV STRÁNKY JE TERAZ PEVNE STANOVENÝ NA ĽUDOVÉ PIESNE */}
+          <Text style={[styles.title, { color: theme.accent }]}>Ľudové piesne</Text>
+        </View>
         <TouchableOpacity style={styles.modeToggle} onPress={() => setIsDarkMode(!isDarkMode)}>
           <Text style={{ fontSize: 24 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
         </TouchableOpacity>
@@ -160,14 +163,10 @@ export default function App() {
   const otvorDetail = useCallback((item) => {
     if (searchRef.current.length > 0) {
       setOtvoreneZHladania(true);
-      if (Platform.OS === 'web') {
-        window.location.hash = 'detail-search';
-      }
+      if (Platform.OS === 'web') window.location.hash = 'detail-search';
     } else {
       setOtvoreneZHladania(false);
-      if (Platform.OS === 'web') {
-        window.location.hash = 'detail';
-      }
+      if (Platform.OS === 'web') window.location.hash = 'detail';
     }
     setVybrana(item);
   }, []);
@@ -182,34 +181,29 @@ export default function App() {
     }
   }, []);
 
-  // 1. KÓD PRE MOBILNÝ ANDROID (Ošetrené aj prepínanie z Obľúbených)
+  // 1. KÓD PRE HARDVÉROVÉ TLAČIDLO SPÄŤ (Mobil + ošetrenie histórie kariet)
   useEffect(() => {
     const backAction = () => {
-      // Ak je otvorený detail piesne, zavrieme ho
       if (vybranaRef.current) {
         setVybrana(null);
-        if (!otvoreneZHladaniaRef.current) {
-          setSearch('');
-        }
+        if (!otvoreneZHladaniaRef.current) setSearch('');
         return true; 
       }
-      
-      // Ak svieti text vo vyhľadávaní, vymažeme ho
       if (searchRef.current.length > 0) {
         setSearch('');
         setOtvoreneZHladania(false);
         return true; 
       }
 
-      // OPRAVA: Ak sme na karte Obľúbené, skočíme späť na hlavné Piesne
+      // Ak sme na karte Obľúbené (FavoritesTab), tlačidlo späť nás vráti na hlavnú kartu Piesne
       if (navigationRef.isReady()) {
         const aktuálnaTrasa = navigationRef.getCurrentRoute();
-        if (aktuálnaTrasa && aktuálnaTrasa.name === 'Obľúbené') {
-          navigationRef.navigate('Ľudové piesne');
-          return true; // Zastaví vypnutie aplikácie
+        if (aktuálnaTrasa && aktuálnaTrasa.name === 'FavoritesTab') {
+          navigationRef.navigate('SongsTab');
+          if (Platform.OS === 'web') window.history.replaceState(null, '', ' ');
+          return true; 
         }
       }
-
       return false; 
     };
 
@@ -217,7 +211,7 @@ export default function App() {
     return () => backHandler.remove();
   }, []);
 
-  // 2. KÓD PRE WEBOVÝ PREHLIADAČ
+  // 2. KÓD PRE WEBOVÝ PREHLIADAČ (Sledovanie zmien URL a hashov)
   useEffect(() => {
     if (Platform.OS !== 'web') return;
 
@@ -226,13 +220,18 @@ export default function App() {
 
       if (vybranaRef.current && !hash.includes('detail')) {
         setVybrana(null);
-        if (!otvoreneZHladaniaRef.current) {
-          setSearch('');
-        }
+        if (!otvoreneZHladaniaRef.current) setSearch('');
       } 
       else if (!vybranaRef.current && searchRef.current.length > 0 && hash !== '#search') {
         setSearch('');
         setOtvoreneZHladania(false);
+      }
+      // Ak používateľ stlačí späť na webe z obľúbených kariet bez hashov
+      else if (hash === '' && navigationRef.isReady()) {
+        const aktuálnaTrasa = navigationRef.getCurrentRoute();
+        if (aktuálnaTrasa && aktuálnaTrasa.name === 'FavoritesTab') {
+          navigationRef.navigate('SongsTab');
+        }
       }
     };
 
@@ -273,11 +272,29 @@ export default function App() {
           tabBarActiveTintColor: theme.accent, 
           tabBarInactiveTintColor: '#999',
         }}>
-          <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
+          {/* Názvy trás (name) sú upravené ako ID, aby sa nebili s textom hlavičky */}
+          <Tab.Screen 
+            name="SongsTab" 
+            options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}
+            listeners={{
+              tabPress: () => {
+                if (Platform.OS === 'web') window.history.replaceState(null, '', ' ');
+              },
+            }}
+          >
             {props => <ListScreen {...props} data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
           </Tab.Screen>
-          <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
-            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
+          
+          <Tab.Screen 
+            name="FavoritesTab" 
+            options={{ tabBarLabel: 'Obľúbené', tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}
+            listeners={{
+              tabPress: () => {
+                if (Platform.OS === 'web') window.location.hash = 'favorites';
+              },
+            }}
+          >
+            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Ľudové piesne" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
           </Tab.Screen>
         </Tab.Navigator>
       </View>
@@ -314,4 +331,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-          
+  
