@@ -823,7 +823,7 @@ Hej! Tečie voda zhora, bystrá je ako ja, točí sa okolo, okolo javora. Tečie
 
 2. Ja mušu, ja mušu, na vojnu ity, a svoju frajirku zochabity. Kamaraťa moji ša poženilya mene samoho zochabily.
 
-3. Budeš ty, budeš ty, banovaty, mohla jes ročok dva počekaty. Ale ty ročok dva nepočekalaa mene samoho zochabila.`
+3. Budeš ty, budeš ty, banovaty, mohla jes ročok dva počekaty. Ale ty ročok dva nepočekala a mene samoho zochabila.`
   },
   {
     id: '76',
