@@ -13,7 +13,7 @@ import { pesnickyData } from './songs';
 const Tab = createBottomTabNavigator();
 const { height: screenHeight } = Dimensions.get('window');
 
-// Referencia pre navigáciu, aby sme vedeli prepínať karty cez tlačidlo späť
+// VYTVORENIE REFERENCIE PRE NAVIGÁCIU (Nutné pre funkčnosť tlačidla späť)
 const navigationRef = createNavigationContainerRef();
 
 const bezDiakritiky = (str) => {
@@ -27,7 +27,7 @@ const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
   >
     <View style={styles.songRow}>
       <Text style={[styles.songTitle, { color: theme.text }]}>{item.nazov}</Text>
-      {isFavorite && <Text style={{ fontSize: 16, marginLeft: 8 }}>❤️</Text>}
+      {isFavorite && <Text style={styles.miniHeart}>❤️</Text>}
     </View>
     <Text style={[styles.arrow, { color: theme.accent }]}>〉</Text>
   </TouchableOpacity>
@@ -149,7 +149,8 @@ export default function App() {
     if (Platform.OS === 'web') {
       if (searchRef.current === '' && text !== '') {
         window.location.hash = 'search';
-      } else if (text === '') {
+      } 
+      else if (text === '') {
         window.history.replaceState(null, '', ' ');
       }
     }
@@ -159,10 +160,14 @@ export default function App() {
   const otvorDetail = useCallback((item) => {
     if (searchRef.current.length > 0) {
       setOtvoreneZHladania(true);
-      if (Platform.OS === 'web') window.location.hash = 'detail-search';
+      if (Platform.OS === 'web') {
+        window.location.hash = 'detail-search';
+      }
     } else {
       setOtvoreneZHladania(false);
-      if (Platform.OS === 'web') window.location.hash = 'detail';
+      if (Platform.OS === 'web') {
+        window.location.hash = 'detail';
+      }
     }
     setVybrana(item);
   }, []);
@@ -177,29 +182,31 @@ export default function App() {
     }
   }, []);
 
-  // HARDVÉROVÉ TLAČIDLO SPÄŤ (Android)
+  // 1. KÓD PRE MOBILNÝ ANDROID (Ošetrené aj prepínanie z Obľúbených)
   useEffect(() => {
     const backAction = () => {
-      // 1. Ak je otvorená pesnička, zavrieme ju
+      // Ak je otvorený detail piesne, zavrieme ho
       if (vybranaRef.current) {
         setVybrana(null);
-        if (!otvoreneZHladaniaRef.current) setSearch('');
+        if (!otvoreneZHladaniaRef.current) {
+          setSearch('');
+        }
         return true; 
       }
       
-      // 2. Ak je niečo v hľadaní, vymažeme to
+      // Ak svieti text vo vyhľadávaní, vymažeme ho
       if (searchRef.current.length > 0) {
         setSearch('');
         setOtvoreneZHladania(false);
         return true; 
       }
 
-      // 3. Ak sme na karte „Obľúbené“, prejdeme na hlavnú kartu „Ľudové piesne“
+      // OPRAVA: Ak sme na karte Obľúbené, skočíme späť na hlavné Piesne
       if (navigationRef.isReady()) {
-        const currentRoute = navigationRef.getCurrentRoute();
-        if (currentRoute && currentRoute.name === 'Obľúbené') {
+        const aktuálnaTrasa = navigationRef.getCurrentRoute();
+        if (aktuálnaTrasa && aktuálnaTrasa.name === 'Obľúbené') {
           navigationRef.navigate('Ľudové piesne');
-          return true; 
+          return true; // Zastaví vypnutie aplikácie
         }
       }
 
@@ -210,7 +217,7 @@ export default function App() {
     return () => backHandler.remove();
   }, []);
 
-  // WEBOVÁ ŠÍPKA SPÄŤ
+  // 2. KÓD PRE WEBOVÝ PREHLIADAČ
   useEffect(() => {
     if (Platform.OS !== 'web') return;
 
@@ -219,8 +226,11 @@ export default function App() {
 
       if (vybranaRef.current && !hash.includes('detail')) {
         setVybrana(null);
-        if (!otvoreneZHladaniaRef.current) setSearch('');
-      } else if (!vybranaRef.current && searchRef.current.length > 0 && hash !== '#search') {
+        if (!otvoreneZHladaniaRef.current) {
+          setSearch('');
+        }
+      } 
+      else if (!vybranaRef.current && searchRef.current.length > 0 && hash !== '#search') {
         setSearch('');
         setOtvoreneZHladania(false);
       }
@@ -234,8 +244,13 @@ export default function App() {
     if (Platform.OS === 'web') {
       document.title = "Ľudové piesne";
       const fontLink = document.createElement('link');
-      fontLink.href = '[https://fonts.googleapis.com/css2?family=Lobster&display=swap](https://fonts.googleapis.com/css2?family=Lobster&display=swap)'; fontLink.rel = 'stylesheet';
+      fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap'; fontLink.rel = 'stylesheet';
       document.head.appendChild(fontLink);
+
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = '/manifest.json';
+      document.head.appendChild(manifestLink);
     }
     const loadData = async () => { const saved = await AsyncStorage.getItem('@moje_srdiecka'); if (saved) setFavorites(JSON.parse(saved)); };
     loadData();
@@ -299,4 +314,4 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-                      
+          
