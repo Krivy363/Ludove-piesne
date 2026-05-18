@@ -5,13 +5,16 @@ import {
   Animated, Dimensions 
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { pesnickyData } from './songs'; 
 
 const Tab = createBottomTabNavigator();
 const { height: screenHeight } = Dimensions.get('window');
+
+// Referencia pre navigáciu, aby sme vedeli prepínať karty cez tlačidlo späť
+const navigationRef = createNavigationContainerRef();
 
 const bezDiakritiky = (str) => {
   return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
@@ -142,35 +145,27 @@ export default function App() {
   useEffect(() => { searchRef.current = search; }, [search]);
   useEffect(() => { otvoreneZHladaniaRef.current = otvoreneZHladania; }, [otvoreneZHladania]);
 
-  // WEB AJ MOBIL: Riadenie histórie pri písaní textu
   const aktualizujHladanie = useCallback((text) => {
     if (Platform.OS === 'web') {
-      // Ak začíname písať do prázdneho poľa, pridáme bod do histórie
       if (searchRef.current === '' && text !== '') {
         window.location.hash = 'search';
-      } 
-      // Ak pole úplne vymažeme manuálne, odstránime hash bez kroku späť
-      else if (text === '') {
+      } else if (text === '') {
         window.history.replaceState(null, '', ' ');
       }
     }
     setSearch(text);
   }, []);
 
-  const otvorDetail = useCallback((item) => {
+  const打开Detail = (item) => {
     if (searchRef.current.length > 0) {
       setOtvoreneZHladania(true);
-      if (Platform.OS === 'web') {
-        window.location.hash = 'detail-search';
-      }
+      if (Platform.OS === 'web') window.location.hash = 'detail-search';
     } else {
       setOtvoreneZHladania(false);
-      if (Platform.OS === 'web') {
-        window.location.hash = 'detail';
-      }
+      if (Platform.OS === 'web') window.location.hash = 'detail';
     }
     setVybrana(item);
-  }, []);
+  };
 
   const zatvorDetail = useCallback(() => {
     setVybrana(null);
@@ -182,44 +177,50 @@ export default function App() {
     }
   }, []);
 
-  // 1. KÓD PRE MOBILNÝ ANDROID (Hardvérové tlačidlo späť)
+  // HARDVÉROVÉ TLAČIDLO SPÄŤ (Android)
   useEffect(() => {
     const backAction = () => {
+      // 1. Ak je otvorená pesnička, zavrieme ju
       if (vybranaRef.current) {
         setVybrana(null);
-        if (!otvoreneZHladaniaRef.current) {
-          setSearch('');
-        }
+        if (!otvoreneZHladaniaRef.current) setSearch('');
         return true; 
       }
+      
+      // 2. Ak je niečo v hľadaní, vymažeme to
       if (searchRef.current.length > 0) {
         setSearch('');
         setOtvoreneZHladania(false);
         return true; 
       }
-      return false; 
+
+      // 3. NOVÉ: Ak sme na karte „Obľúbené“, prejdeme na hlavnú kartu „Ľudové piesne“
+      if (navigationRef.isReady()) {
+        const currentRoute = navigationRef.getCurrentRoute();
+        if (currentRoute && currentRoute.name === 'Obľúbené') {
+          navigationRef.navigate('Ľudové piesne');
+          return true; // Stopne opustenie aplikácie, iba prepne kartu
+        }
+      }
+
+      return false; // Ak sme na hlavnej stránke a všetko je čisté, apka sa zavrie
     };
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => backHandler.remove();
   }, []);
 
-  // 2. KÓD PRE WEBOVÝ PREHLIADAČ (Šípka späť na webe)
+  // WEBOVÁ ŠÍPKA SPÄŤ
   useEffect(() => {
     if (Platform.OS !== 'web') return;
 
     const handleHashChange = () => {
       const hash = window.location.hash;
 
-      // Ak bol otvorený detail a používateľ stlačil späť
       if (vybranaRef.current && !hash.includes('detail')) {
         setVybrana(null);
-        if (!otvoreneZHladaniaRef.current) {
-          setSearch('');
-        }
-      } 
-      // Ak bol detail zatvorený, sme na zozname a zmazal sa hash 'search'
-      else if (!vybranaRef.current && searchRef.current.length > 0 && hash !== '#search') {
+        if (!otvoreneZHladaniaRef.current) setSearch('');
+      } else if (!vybranaRef.current && searchRef.current.length > 0 && hash !== '#search') {
         setSearch('');
         setOtvoreneZHladania(false);
       }
@@ -235,11 +236,6 @@ export default function App() {
       const fontLink = document.createElement('link');
       fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap'; fontLink.rel = 'stylesheet';
       document.head.appendChild(fontLink);
-
-      const manifestLink = document.createElement('link');
-      manifestLink.rel = 'manifest';
-      manifestLink.href = '/manifest.json';
-      document.head.appendChild(manifestLink);
     }
     const loadData = async () => { const saved = await AsyncStorage.getItem('@moje_srdiecka'); if (saved) setFavorites(JSON.parse(saved)); };
     loadData();
@@ -251,7 +247,7 @@ export default function App() {
   const theme = { bg: isDarkMode ? '#1a1a1a' : '#fdfbf7', card: isDarkMode ? '#2d2d2d' : '#fff', text: isDarkMode ? '#e0e0e0' : '#333', accent: '#8b4513', border: isDarkMode ? '#444' : '#e0d7c6', btnBg: isDarkMode ? '#3d3d3d' : '#f0e6d2' };
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <View style={{ flex: 1, backgroundColor: theme.bg }}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
         <DetailView vybrana={vybrana} zatvorDetail={zatvorDetail} theme={theme} favorites={favorites} toggleFavorite={toggleFavorite} fontSize={fontSize} setFontSize={setFontSize}/>
@@ -263,10 +259,10 @@ export default function App() {
           tabBarInactiveTintColor: '#999',
         }}>
           <Tab.Screen name="Ľudové piesne" options={{ tabBarLabel: 'Piesne', tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> }}>
-            {props => <ListScreen {...props} data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
+            {props => <ListScreen {...props} data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} otvorDetail={打开Detail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
           </Tab.Screen>
           <Tab.Screen name="Obľúbené" options={{ tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> }}>
-            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
+            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Obľúbené" theme={theme} favorites={favorites} otvorDetail={打开Detail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} />}
           </Tab.Screen>
         </Tab.Navigator>
       </View>
@@ -303,4 +299,3 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 160 }, 
   emptyText: { textAlign: 'center', marginTop: 50, color: '#999' }
 });
-  
