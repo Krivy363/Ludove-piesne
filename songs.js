@@ -412,7 +412,7 @@ Refr.: Má roztomilá Maruško, pojď si se mnou na lůžko, má roztomilá Maru
   {
     id: '36',
     nazov: "Ešte som sa neoženil",
-    text: `1. Ešte som sa neoženil, už ma žena bije, a ja som si prihotovil tri bukové kyje. [:S jedným budem ženu biti a s tým druhým deti, deti, deti, deti, a s tým tretím kyja, kyjačiskom pôjdem na zálety.:]
+    text: `1. Ešte som sa neoženil, už ma žena bije, dal som si ja prihotoviť tri dubové kyje. [:S jedným budem ženu biti a s tým druhým deti, deti, deti, deti, a s tým tretím kyja, kyjačiskom pôjdem na zálety.:]
 
 2. Keď ty pôjdeš, pôjdem aj ja, pôjdeme obaja, opýtame še mlynára, co to za novina. [:Kolečka še obracajú, pšenička še mele, mele, mele, mele, moja milá še vydáva, pujdzem na vešele.:]`
   },
