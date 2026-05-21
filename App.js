@@ -51,7 +51,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
   return (
     <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: theme.bg, zIndex: 10000, transform: [{ translateY: slideAnim }] }]}>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.headerControlsAbout}>
+        <View style={[styles.headerControlsAbout, { borderBottomColor: theme.border }]}>
           <TouchableOpacity onPress={zatvorAbout} style={styles.backButton}>
             <Text style={[styles.backText, { color: theme.accent }]}>← Späť</Text>
           </TouchableOpacity>
@@ -63,7 +63,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
           <View style={[styles.detailCard, { backgroundColor: theme.card }]}>
             <Text style={[styles.aboutSectionTitle, { color: theme.accent }]}>Prečo táto aplikácia vznikla?</Text>
             <Text style={[styles.aboutText, { color: theme.text }]}>
-              Táto aplikácia vznikla z lásky k slovenským tradíciám a ľudovým piesňam. Mojím cieľom bolo vytvoriť jednoduchý, moderný a rýchly spevník, ktorý môžete mať kedykoľvek so sebou vo vrecku – či už ste na oslave, posedení pri tónoch akordeónu, alebo si len chcete zaspomínať na naše kultúrne dedičstvo.
+              Táto aplikácia vznikla z lásky k slovenským tradíciám a ľudovým piesňam. Mojím cieľom bolo vytvoriť jednoduchý, moderný a rýchly spevník, ktorý môžete habt kedykoľvek so sebou vo vrecku – či už ste na oslave, posedení pri tónoch akordeónu, alebo si len chcete zaspomínať na naše kultúrne dedičstvo.
             </Text>
 
             <View style={{ height: 1, backgroundColor: theme.border, marginVertical: 20 }} />
@@ -166,15 +166,18 @@ const ListScreen = ({ data, theme, favorites, otvorDetail, isDarkMode, setIsDark
       </View>
 
       <View style={styles.mainHeader}>
-        <View style={styles.titleWrapper}>
-          <Text style={[styles.title, { color: theme.accent }]}>Ľudové piesne</Text>
-        </View>
+        {/* Lavá strana - prázdny vyvažovací bod, aby bol stred naozaj v strede */}
+        <View style={styles.headerLeftSpacer} />
         
+        {/* Stred - čistý text */}
+        <Text style={[styles.title, { color: theme.accent }]}>Ľudové piesne</Text>
+        
+        {/* Pravá strana - Najprv mesiac, potom úplne na kraji Info */}
         <View style={styles.headerRightButtons}>
-          <TouchableOpacity style={{ padding: 4 }} onPress={() => setIsDarkMode(!isDarkMode)}>
+          <TouchableOpacity style={styles.iconTouch} onPress={() => setIsDarkMode(!isDarkMode)}>
             <Text style={{ fontSize: 24 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 4 }} onPress={otvorAbout}>
+          <TouchableOpacity style={styles.iconTouch} onPress={otvorAbout}>
             <Text style={{ fontSize: 24 }}>ℹ️</Text>
           </TouchableOpacity>
         </View>
@@ -284,11 +287,11 @@ export default function App() {
       }
 
       if (navigationRef.isReady()) {
-        const aktuálnaTrasa = navigationRef.getCurrentRoute();
-        if (aktuálnaTrasa && aktuálnaTrasa.name === 'SongsTab') {
+        const aktualnaTrasa = navigationRef.getCurrentRoute();
+        if (aktualnaTrasa && aktualnaTrasa.name === 'SongsTab') {
           return false; 
         }
-        if (aktuálnaTrasa && aktuálnaTrasa.name === 'FavoritesTab') {
+        if (aktualnaTrasa && aktualnaTrasa.name === 'FavoritesTab') {
           navigationRef.navigate('SongsTab');
           if (Platform.OS === 'web') window.history.replaceState(null, '', ' ');
           return true; 
@@ -319,8 +322,8 @@ export default function App() {
         setOtvoreneZHladania(false);
       }
       else if (hash === '' && navigationRef.isReady()) {
-        const aktuálnaTrasa = navigationRef.getCurrentRoute();
-        if (aktuálnaTrasa && aktuálnaTrasa.name === 'FavoritesTab') {
+        const aktualnaTrasa = navigationRef.getCurrentRoute();
+        if (aktualnaTrasa && aktualnaTrasa.name === 'FavoritesTab') {
           navigationRef.navigate('SongsTab');
         }
       }
@@ -412,29 +415,29 @@ const styles = StyleSheet.create({
   mainHeader: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    justifyContent: 'center', 
+    justifyContent: 'space-between', 
     paddingHorizontal: 20, 
-    marginBottom: 5, 
-    position: 'relative', 
-    minHeight: 55,
-    width: '100%'
+    marginBottom: 5,
+    minHeight: 55
   },
-  titleWrapper: { 
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1
+  headerLeftSpacer: {
+    width: 80
   },
-  title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', textAlign: 'center' },
+  title: { 
+    fontSize: 34, 
+    fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', 
+    textAlign: 'center',
+    flex: 1
+  },
   headerRightButtons: { 
-    position: 'absolute', 
-    right: 20, 
     flexDirection: 'row', 
     alignItems: 'center', 
-    gap: 12,
-    zIndex: 2
+    justifyContent: 'flex-end',
+    width: 80,
+    gap: 8
+  },
+  iconTouch: {
+    padding: 4
   },
   quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 },
   quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', opacity: 0.8 },
@@ -447,6 +450,4 @@ const styles = StyleSheet.create({
   backButton: { paddingLeft: 20, paddingVertical: 10 },
   backText: { fontSize: 18, fontWeight: 'bold' },
   rightControls: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingRight: 20 },
-  zoomBtn: { padding: 8, borderRadius: 10, minWidth: 40, alignItems: 'center' },
-  detailCard: { borderRadius: 20, padding: 25, elevation: 3, marginTop: 10 },
-  detailNazov: { fontSize: 28, fontWeight: 'bold', t
+  zoomBtn: { padding: 8, borderRadius: 10, minWidth: 40, alignItems: 'ce
