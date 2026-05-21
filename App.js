@@ -90,7 +90,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
               </View>
             </View>
 
-            <Text style={styles.aboutFooter}>Ďakujem za každú podporu a prajem príjemné spievane! 🎶</Text>
+            <Text style={styles.aboutFooter}>Ďakujem za každú podporu a prajem príjemné spievanie! 🎶</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
