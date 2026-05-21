@@ -76,7 +76,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
             <View style={[styles.bankContainer, { backgroundColor: theme.btnBg, borderColor: theme.border }]}>
               <Text style={[styles.bankLabel, { color: theme.text }]}>Číslo účtu (IBAN):</Text>
               <Text style={[styles.bankIban, { color: theme.accent }]} selectable={true}>
-                SK00 0000 0000 0000 0000 0000
+                SK42 0900 0000 0003 2437 2097
               </Text>
               <Text style={{ fontSize: 11, color: '#888', marginTop: 5, textAlign: 'center' }}>
                 (Dlhým podržaním môžete IBAN skopírovať)
