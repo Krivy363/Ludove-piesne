@@ -755,15 +755,15 @@ Refr.: Má roztomilá Maruško, pojď si se mnou na lůžko, má roztomilá Maru
     nazov: "Hojdana hojdana",
     text: `Refr.: Hojdana, hojdana, ňepude za pana, aľe za takego, jako jek jo sama.
 
-1. A mo̲j uočec taki chytry posadžyl me mjyndzy ľytry, mjyndzy ľytry, mjyndzy sčebľetu se pošedž mlody ďebľe.
+1. A môj uočec taki chytry posadžyl me mjyndzy ľytry, mjyndzy ľytry, mjyndzy sčebľetu se pošedž mlody ďebľe.
 
-2. A mo̲j uočec v topaneckaka mamuša v kapcak, očec idže cupi-lupia mamuša cap-cap.
+2. A môj uočec v topaneckaka mamuša v kapcak, očec idže cupi-lupia mamuša cap-cap.
 
-3. Mjel jeg uojca bogategodol mi capa rogategoa kozusek ze fsami, cobyk rusal pľecami.
+3. Mjel jeg uojca bogatego dol mi capa rogategoa kozusek ze fsami, cobyk rusal pľecami.
 
 4. Ňemacoj mje po koľaňe, bo v koľaňe sama košč, pomacoj mje troche vysynarobime šmjeychu doš.
 
-5. A mo̲j uočec fajke kuři, a mamuša pjyře dře, uočec idže ku mamuši, a mamuša hehehe.
+5. A môj uočec fajke kuři, a mamuša pjyře dře, uočec idže ku mamuši, a mamuša hehehe.
 
 6. Kozaľi mi kure pašč, na povrože šadač, kura jajko stračyla, ňedaľi mi šňadač.
 
