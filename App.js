@@ -66,6 +66,20 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
               Táto aplikácia vznikla z lásky k slovenským tradíciám a ľudovým piesňam. Mojím cieľom bolo vytvoriť jednoduchý, moderný a rýchly spevník, ktorý môžete mať kedykoľvek so sebou vo vrecku – či už ste na oslave, posedení pri tónoch heligónky alebo si len chcete zaspomínať na naše kultúrne dedičstvo.
             </Text>
 
+            <View style={{ height: 1, backgroundColor: theme.border, marginVertical: 20 }} />
+
+            {/* Sekcia s kontaktom na autora */}
+            <Text style={[styles.aboutSectionTitle, { color: theme.accent }]}>Kontakt</Text>
+            <Text style={[styles.aboutText, { color: theme.text, marginBottom: 5 }]}>
+              Máte nápady na vylepšenie, chceli by ste do spevníka pridať ďalšie piesne, alebo ste našli chybu? Neváhajte ma kontaktovať.
+            </Text>
+            <View style={styles.contactContainer}>
+              <Text style={[styles.contactName, { color: theme.text }]}>Martin Krivulčík</Text>
+              <Text style={[styles.contactEmail, { color: theme.accent }]} selectable={true}>
+                krivulcik.martin@gmail.com
+              </Text>
+            </View>
+
             <Text style={styles.aboutFooter}>Prajem príjemné spievanie! 🎶</Text>
           </View>
         </ScrollView>
@@ -432,5 +446,8 @@ const styles = StyleSheet.create({
   aboutHeaderTitle: { fontSize: 22, fontWeight: 'bold', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   aboutSectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   aboutText: { fontSize: 15, lineHeight: 22, marginBottom: 15, textAlign: 'justify' },
-  aboutFooter: { fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginTop: 15, fontStyle: 'italic', color: '#888' }
+  contactContainer: { padding: 15, borderRadius: 12, borderStyle: 'dashed', borderWidth: 1, borderColor: '#ccc', marginVertical: 10, alignItems: 'center' },
+  contactName: { fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
+  contactEmail: { fontSize: 15, fontWeight: '500', letterSpacing: 0.5 },
+  aboutFooter: { fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginTop: 30, fontStyle: 'italic', color: '#888' }
 });
