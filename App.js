@@ -76,7 +76,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
             <View style={[styles.bankContainer, { backgroundColor: theme.btnBg, borderColor: theme.border }]}>
               <Text style={[styles.bankLabel, { color: theme.text }]}>Číslo účtu (IBAN):</Text>
               <Text style={[styles.bankIban, { color: theme.accent }]} selectable={true}>
-                SK42 0900 0000 0003 2437 2097
+                SK00 0000 0000 0000 0000 0000
               </Text>
               <Text style={{ fontSize: 11, color: '#888', marginTop: 5, textAlign: 'center' }}>
                 (Dlhým podržaním môžete IBAN skopírovať)
@@ -160,8 +160,9 @@ const ListScreen = ({ data, theme, favorites, otvorDetail, isDarkMode, setIsDark
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <View style={[styles.folkBorder, { backgroundColor: theme.accent, marginTop: Platform.OS === 'ios' ? 0 : 30 }]}>
-        <Text style={styles.folkPattern} numberOfLines={1}>
-          ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
+        {/* Odstránené numberOfLines, pridané špeciálne orezanie bez troch bodiek */}
+        <Text style={styles.folkPattern}>
+          ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
         </Text>
       </View>
 
@@ -405,8 +406,18 @@ export default function App() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   folkBorder: { height: 24, width: '100%', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', marginBottom: 5 },
-  folkPattern: { color: '#fff', fontSize: 16, letterSpacing: 2, fontWeight: 'bold', width: '100%', textAlign: 'center' },
-  mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 5, minHeight: 55 },
+  folkPattern: { 
+    color: '#fff', 
+    fontSize: 16, 
+    letterSpacing: 2, 
+    fontWeight: 'bold', 
+    width: '100%', 
+    textAlign: 'center',
+    // Tieto dva riadky zabezpečia, že sa vzor proste na kraji usekne a nevzniknú tri bodky
+    overflow: 'hidden',
+    lineHeight: 24
+  },
+  mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContext: 'space-between', paddingHorizontal: 20, marginBottom: 5, minHeight: 55 },
   headerLeftSpacer: { width: 80 },
   title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', textAlign: 'center', flex: 1 },
   headerRightButtons: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', width: 80, gap: 8 },
