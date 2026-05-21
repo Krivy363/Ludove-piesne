@@ -321,3 +321,122 @@ export default function App() {
       else if (hash === '' && navigationRef.isReady()) {
         const aktualnaTrasa = navigationRef.getCurrentRoute();
         if (aktualnaTrasa && aktualnaTrasa.name === 'FavoritesTab') {
+          navigationRef.navigate('SongsTab');
+        }
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      document.title = "Ľudové piesne";
+      const fontLink = document.createElement('link');
+      fontLink.href = 'https://fonts.googleapis.com/css2?family=Lobster&display=swap'; fontLink.rel = 'stylesheet';
+      document.head.appendChild(fontLink);
+
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = '/manifest.json';
+      document.head.appendChild(manifestLink);
+    }
+    const loadData = async () => { const saved = await AsyncStorage.getItem('@moje_srdiecka'); if (saved) setFavorites(JSON.parse(saved)); };
+    loadData();
+  }, []);
+
+  useEffect(() => { AsyncStorage.setItem('@moje_srdiecka', JSON.stringify(favorites)); }, [favorites]);
+  const toggleFavorite = useCallback((id) => { setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]); }, []);
+
+  const theme = { bg: isDarkMode ? '#1a1a1a' : '#fdfbf7', card: isDarkMode ? '#2d2d2d' : '#fff', text: isDarkMode ? '#e0e0e0' : '#333', accent: '#8b4513', border: isDarkMode ? '#444' : '#e0d7c6', btnBg: isDarkMode ? '#3d3d3d' : '#f0e6d2' };
+
+  return (
+    <NavigationContainer ref={navigationRef}>
+      <View style={{ flex: 1, backgroundColor: theme.bg }}>
+        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+        
+        <DetailView vybrana={vybrana} zatvorDetail={zatvorDetail} theme={theme} favorites={favorites} toggleFavorite={toggleFavorite} fontSize={fontSize} setFontSize={setFontSize}/>
+        <AboutView viditelne={aboutVisible} zatvorAbout={zatvorAbout} theme={theme} />
+        
+        <Tab.Navigator screenOptions={{ 
+          headerShown: false, 
+          tabBarStyle: { backgroundColor: theme.card, borderTopColor: 'transparent', height: 65, marginBottom: Platform.OS === 'ios' ? 30 : 20, marginHorizontal: 30, borderRadius: 40, position: 'absolute', elevation: 12 }, 
+          tabBarActiveTintColor: theme.accent, 
+          tabBarInactiveTintColor: '#999',
+        }}>
+          <Tab.Screen 
+            name="SongsTab" 
+            options={{ 
+              title: 'Ľudové piesne', 
+              tabBarLabel: 'Piesne', 
+              tabBarIcon: () => <Text style={{fontSize: 22}}>🎶</Text> 
+            }}
+            listeners={{
+              tabPress: () => {
+                if (Platform.OS === 'web') window.history.replaceState(null, '', ' ');
+              },
+            }}
+          >
+            {props => <ListScreen {...props} data={pesnickyData} theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} otvorAbout={otvorAbout} />}
+          </Tab.Screen>
+          
+          <Tab.Screen 
+            name="FavoritesTab" 
+            options={{ 
+              title: 'Ľudové piesne', 
+              tabBarLabel: 'Obľúbené', 
+              tabBarIcon: () => <Text style={{fontSize: 22}}>❤️</Text> 
+            }}
+            listeners={{
+              tabPress: () => {
+                if (Platform.OS === 'web') window.location.hash = 'favorites';
+              },
+            }}
+          >
+            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} otvorAbout={otvorAbout} />}
+          </Tab.Screen>
+        </Tab.Navigator>
+      </View>
+    </NavigationContainer>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  folkBorder: { height: 24, width: '100%', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', marginBottom: 5 },
+  folkPattern: { color: '#fff', fontSize: 16, letterSpacing: 2, fontWeight: 'bold', width: '100%', textAlign: 'center' },
+  mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 5, minHeight: 55 },
+  headerLeftSpacer: { width: 80 },
+  title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', textAlign: 'center', flex: 1 },
+  headerRightButtons: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', width: 80, gap: 8 },
+  iconTouch: { padding: 4 },
+  quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 },
+  quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', opacity: 0.8 },
+  searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16, marginHorizontal: 20 },
+  songCard: { padding: 18, borderRadius: 15, marginBottom: 10, marginHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 1 },
+  songRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  songTitle: { fontSize: 20, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
+  arrow: { fontSize: 18 },
+  headerControls: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
+  backButton: { paddingLeft: 20, paddingVertical: 10 },
+  backText: { fontSize: 18, fontWeight: 'bold' },
+  rightControls: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingRight: 20 },
+  zoomBtn: { padding: 8, borderRadius: 10, minWidth: 40, alignItems: 'center' },
+  detailCard: { borderRadius: 20, padding: 25, elevation: 3, marginTop: 10 },
+  detailNazov: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
+  detailText: { lineHeight: 32, textAlign: 'center' },
+  scrollContent: { paddingBottom: 160 }, 
+  emptyText: { textAlign: 'center', marginTop: 50, color: '#999' },
+  headerControlsAbout: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
+  scrollContentAbout: { paddingBottom: 160, paddingHorizontal: 20, paddingTop: 10 },
+  aboutHeaderTitle: { fontSize: 22, fontWeight: 'bold', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
+  aboutSectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
+  aboutText: { fontSize: 15, lineHeight: 22, marginBottom: 15, textAlign: 'justify' },
+  bankContainer: { padding: 15, borderRadius: 12, borderWidth: 1, marginTop: 10, alignItems: 'center' },
+  bankLabel: { fontSize: 15, fontWeight: 'bold' },
+  bankIban: { fontSize: 16, fontWeight: 'bold', marginTop: 5, letterSpacing: 1, textAlign: 'center' },
+  qrContainer: { alignItems: 'center', justifyContent: 'center', marginTop: 5 },
+  qrPlaceholder: { width: 200, height: 200, borderWidth: 1, borderStyle: 'dashed', borderRadius: 10, justifyContent: 'center', padding: 15 },
+  aboutFooter: { fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginTop: 25, fontStyle: 'italic', color: '#888' }
+});
