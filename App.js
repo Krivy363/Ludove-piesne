@@ -76,7 +76,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
             <View style={[styles.bankContainer, { backgroundColor: theme.btnBg, borderColor: theme.border }]}>
               <Text style={[styles.bankLabel, { color: theme.text }]}>Číslo účtu (IBAN):</Text>
               <Text style={[styles.bankIban, { color: theme.accent }]} selectable={true}>
-                SK42 0900 0000 0003 2437 2097
+                SK42 0900 0000 0003 2437 2097
               </Text>
               <Text style={{ fontSize: 11, color: '#888', marginTop: 5, textAlign: 'center' }}>
                 (Dlhým podržaním môžete IBAN skopírovať)
@@ -157,10 +157,16 @@ const ListScreen = ({ data, theme, favorites, otvorDetail, isDarkMode, setIsDark
                .sort((a, b) => a.nazov.localeCompare(b.nazov, 'sk'));
   }, [search, data]);
 
+  // Pomocná funkcia pre správne gramatické skloňovanie
+  const sklonujPiesne = (pocet) => {
+    if (pocet === 1) return 'pieseň';
+    if (pocet >= 2 && pocet <= 4) return 'piesne';
+    return 'piesní';
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <View style={[styles.folkBorder, { backgroundColor: theme.accent, marginTop: Platform.OS === 'ios' ? 0 : 30 }]}>
-        {/* Odstránené numberOfLines, pridané špeciálne orezanie bez troch bodiek */}
         <Text style={styles.folkPattern}>
           ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖ ❖
         </Text>
@@ -193,6 +199,14 @@ const ListScreen = ({ data, theme, favorites, otvorDetail, isDarkMode, setIsDark
         value={search} 
         clearButtonMode="while-editing"
       />
+
+      {/* Dynamické počítadlo piesní */}
+      <Text style={[styles.songCountText, { color: theme.text }]}>
+        {search 
+          ? `Nájdené: ${filtered.length} ${sklonujPiesne(filtered.length)}` 
+          : `Celkovo: ${filtered.length} ${sklonujPiesne(filtered.length)}`
+        }
+      </Text>
       
       <FlatList
         data={filtered}
@@ -413,11 +427,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold', 
     width: '100%', 
     textAlign: 'center',
-    // Tieto dva riadky zabezpečia, že sa vzor proste na kraji usekne a nevzniknú tri bodky
     overflow: 'hidden',
     lineHeight: 24
   },
-  mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContext: 'space-between', paddingHorizontal: 20, marginBottom: 5, minHeight: 55 },
+  mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 5, minHeight: 55 },
   headerLeftSpacer: { width: 80 },
   title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', textAlign: 'center', flex: 1 },
   headerRightButtons: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', width: 80, gap: 8 },
@@ -425,29 +438,9 @@ const styles = StyleSheet.create({
   quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 },
   quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', opacity: 0.8 },
   searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16, marginHorizontal: 20 },
+  songCountText: { textAlign: 'right', marginHorizontal: 25, marginBottom: 12, opacity: 0.5, fontSize: 14, fontWeight: '500' },
   songCard: { padding: 18, borderRadius: 15, marginBottom: 10, marginHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 1 },
   songRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   songTitle: { fontSize: 20, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   arrow: { fontSize: 18 },
-  headerControls: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
-  backButton: { paddingLeft: 20, paddingVertical: 10 },
-  backText: { fontSize: 18, fontWeight: 'bold' },
-  rightControls: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingRight: 20 },
-  zoomBtn: { padding: 8, borderRadius: 10, minWidth: 40, alignItems: 'center' },
-  detailCard: { borderRadius: 20, padding: 25, elevation: 3, marginTop: 10 },
-  detailNazov: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
-  detailText: { lineHeight: 32, textAlign: 'center' },
-  scrollContent: { paddingBottom: 160 }, 
-  emptyText: { textAlign: 'center', marginTop: 50, color: '#999' },
-  headerControlsAbout: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
-  scrollContentAbout: { paddingBottom: 160, paddingHorizontal: 20, paddingTop: 10 },
-  aboutHeaderTitle: { fontSize: 22, fontWeight: 'bold', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
-  aboutSectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
-  aboutText: { fontSize: 15, lineHeight: 22, marginBottom: 15, textAlign: 'justify' },
-  bankContainer: { padding: 15, borderRadius: 12, borderWidth: 1, marginTop: 10, alignItems: 'center' },
-  bankLabel: { fontSize: 15, fontWeight: 'bold' },
-  bankIban: { fontSize: 16, fontWeight: 'bold', marginTop: 5, letterSpacing: 1, textAlign: 'center' },
-  qrContainer: { alignItems: 'center', justifyContent: 'center', marginTop: 5 },
-  qrPlaceholder: { width: 200, height: 200, borderWidth: 1, borderStyle: 'dashed', borderRadius: 10, justifyContent: 'center', padding: 15 },
-  aboutFooter: { fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginTop: 25, fontStyle: 'italic', color: '#888' }
-});
+  headerControls: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddin
