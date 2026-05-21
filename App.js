@@ -66,31 +66,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
               Táto aplikácia vznikla z lásky k slovenským tradíciám a ľudovým piesňam. Mojím cieľom bolo vytvoriť jednoduchý, moderný a rýchly spevník, ktorý môžete mať kedykoľvek so sebou vo vrecku – či už ste na oslave, posedení pri tónoch heligónky alebo si len chcete zaspomínať na naše kultúrne dedičstvo.
             </Text>
 
-            <View style={{ height: 1, backgroundColor: theme.border, marginVertical: 20 }} />
-
-            <Text style={[styles.aboutSectionTitle, { color: theme.accent }]}>Podpora projektu</Text>
-            <Text style={[styles.aboutText, { color: theme.text }]}>
-              Ak sa vám aplikácia páči, pomáha vám a chceli by ste ma podporiť v jej ďalšom vývoji (pridávanie nových funkcií, piesní a prevádzka), budem nesmierne vďačný za akýkoľvek dobrovoľný príspevok.
-            </Text>
-
-            <View style={[styles.bankContainer, { backgroundColor: theme.btnBg, borderColor: theme.border }]}>
-              <Text style={[styles.bankLabel, { color: theme.text }]}>Číslo účtu (IBAN):</Text>
-              <Text style={[styles.bankIban, { color: theme.accent }]} selectable={true}>
-                SK42 0900 0000 0003 2437 2097
-              </Text>
-              <Text style={{ fontSize: 11, color: '#888', marginTop: 5, textAlign: 'center' }}>
-                (Dlhým podržaním môžete IBAN skopírovať)
-              </Text>
-            </View>
-
-            <Text style={[styles.bankLabel, { color: theme.text, marginTop: 15, marginBottom: 10 }]}>Platba cez QR kód:</Text>
-            <View style={styles.qrContainer}>
-              <View style={[styles.qrPlaceholder, { borderColor: theme.border }]}>
-                <Text style={{ color: '#888', textAlign: 'center', fontSize: 13 }}>Tu sa zobrazí tvoj platobný QR kód, keď ho vložíš do projektu.</Text>
-              </View>
-            </View>
-
-            <Text style={styles.aboutFooter}>Ďakujem za každú podporu a prajem príjemné spievanie! 🎶</Text>
+            <Text style={styles.aboutFooter}>Prajem príjemné spievanie! 🎶</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -157,7 +133,6 @@ const ListScreen = ({ data, theme, favorites, otvorDetail, isDarkMode, setIsDark
                .sort((a, b) => a.nazov.localeCompare(b.nazov, 'sk'));
   }, [search, data]);
 
-  // Pomocná funkcia pre správne gramatické skloňovanie
   const sklonujPiesne = (pocet) => {
     if (pocet === 1) return 'pieseň';
     if (pocet >= 2 && pocet <= 4) return 'piesne';
@@ -200,7 +175,6 @@ const ListScreen = ({ data, theme, favorites, otvorDetail, isDarkMode, setIsDark
         clearButtonMode="while-editing"
       />
 
-      {/* Dynamické počítadlo piesní */}
       <Text style={[styles.songCountText, { color: theme.text }]}>
         {search 
           ? `Nájdené: ${filtered.length} ${sklonujPiesne(filtered.length)}` 
@@ -458,10 +432,5 @@ const styles = StyleSheet.create({
   aboutHeaderTitle: { fontSize: 22, fontWeight: 'bold', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   aboutSectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   aboutText: { fontSize: 15, lineHeight: 22, marginBottom: 15, textAlign: 'justify' },
-  bankContainer: { padding: 15, borderRadius: 12, borderWidth: 1, marginTop: 10, alignItems: 'center' },
-  bankLabel: { fontSize: 15, fontWeight: 'bold' },
-  bankIban: { fontSize: 16, fontWeight: 'bold', marginTop: 5, letterSpacing: 1, textAlign: 'center' },
-  qrContainer: { alignItems: 'center', justifyContent: 'center', marginTop: 5 },
-  qrPlaceholder: { width: 200, height: 200, borderWidth: 1, borderStyle: 'dashed', borderRadius: 10, justifyContent: 'center', padding: 15 },
-  aboutFooter: { fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginTop: 25, fontStyle: 'italic', color: '#888' }
+  aboutFooter: { fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginTop: 15, fontStyle: 'italic', color: '#888' }
 });
