@@ -25,13 +25,12 @@ const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
   >
     <View style={styles.songRow}>
       <Text style={[styles.songTitle, { color: theme.text }]}>{item.nazov}</Text>
-      {isFavorite && <Text style={styles.miniHeart}>❤️</Text>}
+      {isFavorite && <Text style={{ marginLeft: 8 }}>❤️</Text>}
     </View>
     <Text style={[styles.arrow, { color: theme.accent }]}>〉</Text>
   </TouchableOpacity>
 ));
 
-// --- NOVÝ KOMPONENT: O APLIKÁCII ---
 const AboutView = ({ viditelne, zatvorAbout, theme }) => {
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   const [isVisible, setIsVisible] = useState(false);
@@ -57,7 +56,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
             <Text style={[styles.backText, { color: theme.accent }]}>← Späť</Text>
           </TouchableOpacity>
           <Text style={[styles.aboutHeaderTitle, { color: theme.text }]}>O aplikácii</Text>
-          <View style={{ width: 60 }} /> {/* Vyváženie dizajnu kvôli šípke späť */}
+          <View style={{ width: 60 }} />
         </View>
 
         <ScrollView contentContainerStyle={[styles.scrollContent, { paddingHorizontal: 20, paddingTop: 10 }]}>
@@ -74,7 +73,6 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
               Ak sa vám aplikácia páči, pomáha vám a chceli by ste ma podporiť v jej ďalšom vývoji (pridávanie nových funkcií, piesní a prevádzka), budem nesmierne vďačný za akýkoľvek dobrovoľný príspevok.
             </Text>
 
-            {/* PLATOBNÉ INFO */}
             <View style={[styles.bankContainer, { backgroundColor: theme.btnBg, borderColor: theme.border }]}>
               <Text style={[styles.bankLabel, { color: theme.text }]}>Číslo účtu (IBAN):</Text>
               <Text style={[styles.bankIban, { color: theme.accent }]} selectable={true}>
@@ -85,11 +83,8 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
               </Text>
             </View>
 
-            {/* UKÁŽKA PRE QR KÓD - Ak máš QR kód, odkomentuj kód nižšie a pridaj súbor do projektu */}
             <Text style={[styles.bankLabel, { color: theme.text, marginTop: 15, marginBottom: 10 }]}>Platba cez QR kód:</Text>
             <View style={styles.qrContainer}>
-              {/* Vymeň './qr_kod.png' za reálnu cestu k tvojmu obrázku, ak ho máš */}
-              {/* <Image source={require('./qr_kod.png')} style={styles.qrImage} /> */}
               <View style={[styles.qrPlaceholder, { borderColor: theme.border }]}>
                 <Text style={{ color: '#888', textAlign: 'center', fontSize: 13 }}>Tu sa zobrazí tvoj platobný QR kód, keď ho vložíš do projektu.</Text>
               </View>
@@ -155,7 +150,7 @@ const DetailView = ({ vybrana, zatvorDetail, theme, favorites, toggleFavorite, f
   );
 };
 
-const ListScreen = ({ data, title, theme, favorites, otvorDetail, isDarkMode, setIsDarkMode, search, aktualizujHladanie, otvorAbout }) => {
+const ListScreen = ({ data, theme, favorites, otvorDetail, isDarkMode, setIsDarkMode, search, aktualizujHladanie, otvorAbout }) => {
   const filtered = useMemo(() => {
     const term = bezDiakritiky(search);
     return data.filter(p => !term || bezDiakritiky(p.nazov).includes(term) || bezDiakritiky(p.text).includes(term))
@@ -171,22 +166,26 @@ const ListScreen = ({ data, title, theme, favorites, otvorDetail, isDarkMode, se
       </View>
 
       <View style={styles.mainHeader}>
+        {/* Kontajner nadpisu je centrovaný absolútne */}
         <View style={styles.titleWrapper}>
           <Text style={[styles.title, { color: theme.accent }]}>Ľudové piesne</Text>
         </View>
         
-        {/* PRAVÝ HORNÝ ROH S TLAČIDLAMI */}
+        {/* PORADIE: Najprv mesiac, potom na úplnom kraji Info tlačidlo */}
         <View style={styles.headerRightButtons}>
-          <TouchableOpacity style={{ padding: 6 }} onPress={otvorAbout}>
-            <Text style={{ fontSize: 22 }}>ℹ️</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={{ padding: 6 }} onPress={() => setIsDarkMode(!isDarkMode)}>
-            <Text style={{ fontSize: 22 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
+            <Text style={{ fontSize: 24 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ padding: 6 }} onPress={otvorAbout}>
+            <Text style={{ fontSize: 24 }}>ℹ️</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <View style={styles.quoteContainer}><Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ljudové piesne, tam žijú tradície.“</Text></View>
+      {/* OPRAVENÉ: ľudové namiesto ljudové */}
+      <View style={styles.quoteContainer}>
+        <Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ľudové piesne, tam žijú tradície.“</Text>
+      </View>
       
       <TextInput 
         style={[styles.searchBar, { backgroundColor: theme.card, color: theme.text, borderColor: theme.border }]} 
@@ -210,7 +209,7 @@ const ListScreen = ({ data, title, theme, favorites, otvorDetail, isDarkMode, se
 
 export default function App() {
   const [vybrana, setVybrana] = useState(null);
-  const [aboutVisible, setAboutVisible] = useState(false); // Stav pre zobrazenie O aplikácii
+  const [aboutVisible, setAboutVisible] = useState(false);
   const [favorites, setFavorites] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [fontSize, setFontSize] = useState(19);
@@ -270,21 +269,17 @@ export default function App() {
     if (Platform.OS === 'web') window.history.replaceState(null, '', ' ');
   }, []);
 
-  // 1. HARDVÉROVÉ TLAČIDLO SPÄŤ (Mobil)
   useEffect(() => {
     const backAction = () => {
-      // Ak je otvorená sekcia O aplikácii, zavrieme ju
       if (aboutVisibleRef.current) {
         setAboutVisible(false);
         return true;
       }
-      // Ak je otvorená pieseň, zavrieme ju
       if (vybranaRef.current) {
         setVybrana(null);
         if (!otvoreneZHladaniaRef.current) setSearch('');
         return true; 
       }
-      // Ak svieti text vo vyhľadávaní, vymažeme ho
       if (searchRef.current.length > 0) {
         setSearch('');
         setOtvoreneZHladania(false);
@@ -309,7 +304,6 @@ export default function App() {
     return () => backHandler.remove();
   }, []);
 
-  // 2. KÓD PRE WEBOVÝ PREHLIADAČ
   useEffect(() => {
     if (Platform.OS !== 'web') return;
 
@@ -365,7 +359,6 @@ export default function App() {
       <View style={{ flex: 1, backgroundColor: theme.bg }}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
         
-        {/* OKNÁ PRE DETAIL A O APLIKÁCII */}
         <DetailView vybrana={vybrana} zatvorDetail={zatvorDetail} theme={theme} favorites={favorites} toggleFavorite={toggleFavorite} fontSize={fontSize} setFontSize={setFontSize}/>
         <AboutView viditelne={aboutVisible} zatvorAbout={zatvorAbout} theme={theme} />
         
@@ -388,7 +381,7 @@ export default function App() {
               },
             }}
           >
-            {props => <ListScreen {...props} data={pesnickyData} title="Ľudové piesne" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} otvorAbout={otvorAbout} />}
+            {props => <ListScreen {...props} data={pesnickyData} theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} otvorAbout={otvorAbout} />}
           </Tab.Screen>
           
           <Tab.Screen 
@@ -404,7 +397,7 @@ export default function App() {
               },
             }}
           >
-            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} title="Ľudové piesne" theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} otvorAbout={otvorAbout} />}
+            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} otvorAbout={otvorAbout} />}
           </Tab.Screen>
         </Tab.Navigator>
       </View>
@@ -419,10 +412,33 @@ const styles = StyleSheet.create({
     color: '#fff', fontSize: 16, letterSpacing: 2, fontWeight: 'bold', width: '100%', textAlign: 'center',
     ...Platform.select({ web: { textOverflow: 'clip', whiteSpace: 'nowrap' } })
   },
-  mainHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, marginBottom: 5, position: 'relative', minHeight: 50 },
-  titleWrapper: { flex: 1, alignItems: 'center', paddingLeft: 40 }, // Mierny posun kvôli vycentrovaniu popri dvoch tlačidlách vpravo
+  mainHeader: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    paddingHorizontal: 20, 
+    marginBottom: 5, 
+    position: 'relative', 
+    minHeight: 55,
+    width: '100%'
+  },
+  titleWrapper: { 
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1
+  },
   title: { fontSize: 34, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', textAlign: 'center' },
-  headerRightButtons: { position: 'absolute', right: 20, flexDirection: 'row', alignItems: 'center', gap: 5 },
+  headerRightButtons: { 
+    position: 'absolute', 
+    right: 20, 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 12,
+    zIndex: 2 // Aby boli klikateľné nad absolútnym pozadím titulku
+  },
   quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 },
   quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', opacity: 0.8 },
   searchBar: { padding: 15, borderRadius: 15, borderWidth: 1, marginBottom: 20, fontSize: 16, marginHorizontal: 20 },
@@ -431,25 +447,4 @@ const styles = StyleSheet.create({
   songTitle: { fontSize: 20, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   arrow: { fontSize: 18 },
   headerControls: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
-  backButton: { paddingLeft: 20, paddingVertical: 10 },
-  backText: { fontSize: 18, fontWeight: 'bold' },
-  rightControls: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingRight: 20 },
-  zoomBtn: { padding: 8, borderRadius: 10, minWidth: 40, alignItems: 'center' },
-  detailCard: { borderRadius: 20, padding: 25, elevation: 3, marginTop: 10 },
-  detailNazov: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
-  detailText: { lineHeight: 32, textAlign: 'center' },
-  scrollContent: { paddingBottom: 160 }, 
-  emptyText: { textAlign: 'center', marginTop: 50, color: '#999' },
-  
-  // ŠTÝLY PRE SEKCIU O APLIKÁCII
-  aboutHeaderTitle: { fontSize: 22, fontWeight: 'bold', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
-  aboutSectionTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
-  aboutText: { fontSize: 15, lineHeight: 22, marginBottom: 15, textAlign: 'justify' },
-  bankContainer: { padding: 15, borderRadius: 12, borderWidth: 1, marginTop: 10, alignItems: 'center' },
-  bankLabel: { fontSize: 15, fontWeight: 'bold' },
-  bankIban: { fontSize: 16, fontWeight: 'bold', marginTop: 5, letterSpacing: 1, textAlign: 'center' },
-  qrContainer: { alignItems: 'center', justifyContent: 'center', marginTop: 5 },
-  qrImage: { width: 200, height: 200, resizeMode: 'contain', borderRadius: 10 },
-  qrPlaceholder: { width: 200, height: 200, borderWidth: 1, borderStyle: 'dashed', borderRadius: 10, justifyContent: 'center', padding: 15 },
-  aboutFooter: { fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginTop: 25, fontStyle: 'italic' }
-});
+  backButton: { paddingLeft: 20, paddingVert
