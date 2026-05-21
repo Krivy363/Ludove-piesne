@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { 
   StyleSheet, Text, View, FlatList, TextInput, 
   TouchableOpacity, ScrollView, SafeAreaView, StatusBar, Platform, BackHandler,
-  Animated, Dimensions, Image 
+  Animated, Dimensions 
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
@@ -51,7 +51,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
   return (
     <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: theme.bg, zIndex: 10000, transform: [{ translateY: slideAnim }] }]}>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={[styles.headerControls, { borderBottomColor: theme.border, paddingHorizontal: 20 }]}>
+        <View style={styles.headerControlsAbout}>
           <TouchableOpacity onPress={zatvorAbout} style={styles.backButton}>
             <Text style={[styles.backText, { color: theme.accent }]}>← Späť</Text>
           </TouchableOpacity>
@@ -59,7 +59,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
           <View style={{ width: 60 }} />
         </View>
 
-        <ScrollView contentContainerStyle={[styles.scrollContent, { paddingHorizontal: 20, paddingTop: 10 }]}>
+        <ScrollView contentContainerStyle={styles.scrollContentAbout}>
           <View style={[styles.detailCard, { backgroundColor: theme.card }]}>
             <Text style={[styles.aboutSectionTitle, { color: theme.accent }]}>Prečo táto aplikácia vznikla?</Text>
             <Text style={[styles.aboutText, { color: theme.text }]}>
@@ -90,7 +90,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
               </View>
             </View>
 
-            <Text style={[styles.aboutFooter, { color: theme.text }]}>Ďakujem za každú podporu a prajem príjemné spievane! 🎶</Text>
+            <Text style={styles.aboutFooter}>Ďakujem za každú podporu a prajem príjemné spievane! 🎶</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -166,23 +166,20 @@ const ListScreen = ({ data, theme, favorites, otvorDetail, isDarkMode, setIsDark
       </View>
 
       <View style={styles.mainHeader}>
-        {/* Kontajner nadpisu je centrovaný absolútne */}
         <View style={styles.titleWrapper}>
           <Text style={[styles.title, { color: theme.accent }]}>Ľudové piesne</Text>
         </View>
         
-        {/* PORADIE: Najprv mesiac, potom na úplnom kraji Info tlačidlo */}
         <View style={styles.headerRightButtons}>
-          <TouchableOpacity style={{ padding: 6 }} onPress={() => setIsDarkMode(!isDarkMode)}>
+          <TouchableOpacity style={{ padding: 4 }} onPress={() => setIsDarkMode(!isDarkMode)}>
             <Text style={{ fontSize: 24 }}>{isDarkMode ? '☀️' : '🌙'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 6 }} onPress={otvorAbout}>
+          <TouchableOpacity style={{ padding: 4 }} onPress={otvorAbout}>
             <Text style={{ fontSize: 24 }}>ℹ️</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* OPRAVENÉ: ľudové namiesto ljudové */}
       <View style={styles.quoteContainer}>
         <Text style={[styles.quoteText, { color: theme.accent }]}>„Kde sa spievajú ľudové piesne, tam žijú tradície.“</Text>
       </View>
@@ -437,7 +434,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     alignItems: 'center', 
     gap: 12,
-    zIndex: 2 // Aby boli klikateľné nad absolútnym pozadím titulku
+    zIndex: 2
   },
   quoteContainer: { paddingVertical: 5, alignItems: 'center', marginBottom: 15, paddingHorizontal: 20 },
   quoteText: { fontSize: 16, textAlign: 'center', fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif', opacity: 0.8 },
@@ -447,4 +444,9 @@ const styles = StyleSheet.create({
   songTitle: { fontSize: 20, fontFamily: Platform.OS === 'web' ? "'Lobster', cursive" : 'serif' },
   arrow: { fontSize: 18 },
   headerControls: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: Platform.OS === 'ios' ? 10 : 40, paddingBottom: 15, borderBottomWidth: 1, marginBottom: 10 },
-  backButton: { paddingLeft: 20, paddingVert
+  backButton: { paddingLeft: 20, paddingVertical: 10 },
+  backText: { fontSize: 18, fontWeight: 'bold' },
+  rightControls: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingRight: 20 },
+  zoomBtn: { padding: 8, borderRadius: 10, minWidth: 40, alignItems: 'center' },
+  detailCard: { borderRadius: 20, padding: 25, elevation: 3, marginTop: 10 },
+  detailNazov: { fontSize: 28, fontWeight: 'bold', t
