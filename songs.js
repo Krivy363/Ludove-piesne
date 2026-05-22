@@ -759,7 +759,7 @@ Refr.: Má roztomilá Maruško, pojď si se mnou na lůžko, má roztomilá Maru
 
 2. A môj uočec v topaneckaka mamuša v kapcak, očec idže cupi-lupia mamuša cap-cap.
 
-3. Mjel jeg uojca bogatego dol mi capa rogategoa kozusek ze fsami, cobyk rusal pľecami.
+3. Mjel jeg uojca bogatego dol mi capa rogatego a kozusek ze fsami, cobyk rusal pľecami.
 
 4. Ňemacoj mje po koľaňe, bo v koľaňe sama košč, pomacoj mje troche vysynarobime šmjeychu doš.
 
