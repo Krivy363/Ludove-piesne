@@ -1159,7 +1159,7 @@ R: Očko mala len jedno, aj na tom mala beľmo, vlasy mala sivé, nohy mala kriv
     nazov: "Chcela stará mladou byť",
     text: `1. Chcela stará mladou byť, išla sa do hory skryť, [:Hej, Dunaj, Dunaja, Dunaja bystra voda. :]
 
-2. Možeš si ty aj ľadom, ňebudeš ti viac mladou, [:ej, Dunaj, Dunaja, Dunaja bystra moja. :]
+2. Možeš si ty aj ľadom, ňebudeš ti viac mladou, [:Hej, Dunaj, Dunaja, Dunaja bystra moja. :]
 
 3. Čo si mila robila, keď si sa tak opila. [:Hej, Dunaj, Dunaja, Dunaja bystra voda. :]`
   },
