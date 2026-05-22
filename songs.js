@@ -619,7 +619,7 @@ Refr.: Má roztomilá Maruško, pojď si se mnou na lůžko, má roztomilá Maru
 
 2. Lavočka toneňka, voda studeneňka a ja molodenka [:mohla sja zlomyty, mohla sja zlomyty, žal mi sja vtopyty.:]
 
-3. Ivanku večerkom, pridi do nas jarkom, pridi do nas jarkom, [:dam ja tobi znati, v kolik pidut spaty ňaňko, ňaňko, maty.:]`
+3. Ivanku večerkom, pridi do nas jarkom, pridi do nas jarkom, [:dam ja tobi znati, v kolik pidut spaty i ňaňko, i maty.:]`
   },
   {
     id: '56',
