@@ -1141,6 +1141,7 @@ R: Očko mala len jedno, aj na tom mala beľmo, vlasy mala sivé, nohy mala kriv
 3. Už som sa vám schoval, do tej hlbočiny, [:že som si nevšímal, chudobnej dievčiny.:]
 
 4. Chudobná dcerečka, jako iskérečka, [:ona sa vrezala, do môjho srdiečka.:]
+
 5. Ona do mojeho, a ja do jejiho, [:tak sme sa vrezali, jeden do druhého.:]`
   },
   {
