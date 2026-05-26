@@ -14,8 +14,16 @@ const Tab = createBottomTabNavigator();
 const { height: screenHeight } = Dimensions.get('window');
 const navigationRef = createNavigationContainerRef();
 
-const bezDiakritiky = (str) => {
-  return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+// Vylepšená funkcia: Odstráni diakritiku A ZÁROVEŇ vymaže čiarky, bodky a iné znamienka
+const ocistiTextPreHladanie = (str) => {
+  if (!str) return "";
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Odstráni mäkčene a dĺžne
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'„“]/g, "") // Odstráni čiarky, bodky, úvodzovky atď.
+    .replace(/\s+/g, " ") // Zjednotí viacnásobné medzery na jednu
+    .toLowerCase()
+    .trim();
 };
 
 const SongItem = React.memo(({ item, isFavorite, onPress, theme }) => (
@@ -63,12 +71,11 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
           <View style={[styles.detailCard, { backgroundColor: theme.card }]}>
             <Text style={[styles.aboutSectionTitle, { color: theme.accent }]}>Prečo táto aplikácia vznikla?</Text>
             <Text style={[styles.aboutText, { color: theme.text }]}>
-              Táto aplikácia vznikla z lásky k slovenským tradíciám a ľudovým piesňam. Mojím cieľom bolo vytvoriť jednoduchý, moderný a rýchly spevník, ktorý môžete mať kedykoľvek so sebou vo vrecku – či už ste na oslave, posedení pri tónoch heligónky alebo si len chcete zaspomínať na naše kultúrne dedičstvo.
+              Táto aplikácia vznikla z lásky k slovenským tradíciám a ľudovým piesňam. Mojím cieľom bolo vytvoriť jednoduchý, moderný a rýchly spevník, ktorý môžete habt kedykoľvek so sebou vo vrecku – či už ste na oslave, posedení pri tónoch heligónky alebo si len chcete zaspomínať na naše kultúrne dedičstvo.
             </Text>
 
             <View style={{ height: 1, backgroundColor: theme.border, marginVertical: 20 }} />
 
-            {/* Sekcia s kontaktom na autora */}
             <Text style={[styles.aboutSectionTitle, { color: theme.accent }]}>Kontakt</Text>
             <Text style={[styles.aboutText, { color: theme.text, marginBottom: 5 }]}>
               Máte nápady na vylepšenie, chceli by ste do spevníka pridať ďalšie piesne, alebo ste našli chybu? Neváhajte ma kontaktovať.
@@ -142,8 +149,8 @@ const DetailView = ({ vybrana, zatvorDetail, theme, favorites, toggleFavorite, f
 
 const ListScreen = ({ data, theme, favorites, otvorDetail, isDarkMode, setIsDarkMode, search, aktualizujHladanie, otvorAbout }) => {
   const filtered = useMemo(() => {
-    const term = bezDiakritiky(search);
-    return data.filter(p => !term || bezDiakritiky(p.nazov).includes(term) || bezDiakritiky(p.text).includes(term))
+    const term = ocistiTextPreHladanie(search);
+    return data.filter(p => !term || ocistiTextPreHladanie(p.nazov).includes(term) || ocistiTextPreHladanie(p.text).includes(term))
                .sort((a, b) => a.nazov.localeCompare(b.nazov, 'sk'));
   }, [search, data]);
 
@@ -238,7 +245,7 @@ export default function App() {
     setSearch(text);
   }, []);
 
-  const otvorDetail = useCallback((item) => {
+  const abrirDetail = useCallback((item) => {
     if (searchRef.current.length > 0) {
       setOtvoreneZHladania(true);
       if (Platform.OS === 'web') window.location.hash = 'detail-search';
@@ -381,7 +388,7 @@ export default function App() {
               },
             }}
           >
-            {props => <ListScreen {...props} data={pesnickyData} theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} otvorAbout={otvorAbout} />}
+            {props => <ListScreen {...props} data={pesnickyData} theme={theme} favorites={favorites} otvorDetail={abrirDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} otvorAbout={otvorAbout} />}
           </Tab.Screen>
           
           <Tab.Screen 
@@ -397,7 +404,7 @@ export default function App() {
               },
             }}
           >
-            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} theme={theme} favorites={favorites} otvorDetail={otvorDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} otvorAbout={otvorAbout} />}
+            {props => <ListScreen {...props} data={pesnickyData.filter(p => favorites.includes(p.id))} theme={theme} favorites={favorites} otvorDetail={abrirDetail} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} search={search} aktualizujHladanie={aktualizujHladanie} otvorAbout={otvorAbout} />}
           </Tab.Screen>
         </Tab.Navigator>
       </View>
