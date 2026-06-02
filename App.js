@@ -71,7 +71,7 @@ const AboutView = ({ viditelne, zatvorAbout, theme }) => {
           <View style={[styles.detailCard, { backgroundColor: theme.card }]}>
             <Text style={[styles.aboutSectionTitle, { color: theme.accent }]}>Prečo táto aplikácia vznikla?</Text>
             <Text style={[styles.aboutText, { color: theme.text }]}>
-              Táto aplikácia vznikla z lásky k slovenským tradíciám a ľudovým piesňam. Mojím cieľom bolo vytvoriť jednoduchý, moderný a rýchly spevník, ktorý môžete habt kedykoľvek so sebou vo vrecku – či už ste na oslave, posedení pri tónoch heligónky alebo si len chcete zaspomínať na naše kultúrne dedičstvo.
+              Táto aplikácia vznikla z lásky k slovenským tradíciám a ľudovým piesňam. Mojím cieľom bolo vytvoriť jednoduchý, moderný a rýchly spevník, ktorý môžete mať kedykoľvek so sebou vo vrecku – či už ste na oslave, posedení pri tónoch heligónky alebo si len chcete zaspomínať na naše kultúrne dedičstvo.
             </Text>
 
             <View style={{ height: 1, backgroundColor: theme.border, marginVertical: 20 }} />
