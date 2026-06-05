@@ -646,11 +646,11 @@ Refr.: Má roztomilá Maruško, pojď si se mnou na lůžko, má roztomilá Maru
   {
     id: '58',
     nazov: "Kopala studienku, pozerala do nej",
-    text: `1. [:Kopala studienku, pozerala do nej,:] [:či je tak hlboká, ako je široká, skočila by do nej.:]
+    text: `1. [:Kopala studienku, pozerala do nej,:] či je tak hlboká, ako je široká, skočila by do nej, hej skočila by do nej.
 
-2. [:A na tej studničke napájala páva,:] [:povedzže mi, milá, holubienka sivá, ktorého si pána.:]
+2. [:A na tej studničke napájala páva,:] spytuje sa šuhaj, spytuje sa šuhaj, ktorého je pána, hej ktorého je pána.
 
-3. [:A ja ti nepoviem, lebo sama neviem,:] [:prídi na večer k nám, mamky sa opýtam, potom ti ja, poviem.:]`
+3. [:A ja ti nepoviem, lebo sama neviem,:] prídi na večer ku nám, príď na večer ku nám, matery sa doznáš, hej matery sa doznáš.`
   },
   {
     id: '59',
