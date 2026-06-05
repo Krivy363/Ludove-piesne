@@ -650,7 +650,7 @@ Refr.: Má roztomilá Maruško, pojď si se mnou na lůžko, má roztomilá Maru
 
 2. [:A na tej studničke napájala páva,:] spytuje sa šuhaj, spytuje sa šuhaj, ktorého je pána, hej ktorého je pána.
 
-3. [:A ja ti nepoviem, lebo sama neviem,:] prídi na večer ku nám, príď na večer ku nám, matery sa doznáš, hej matery sa doznáš.`
+3. [:Nespytuj sa šuhaj, bo ja sama neznam,:] príď na večer do nás, príď na večer do nás, matery sa doznáš, hej matery sa doznáš.`
   },
   {
     id: '59',
