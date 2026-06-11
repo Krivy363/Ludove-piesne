@@ -432,7 +432,7 @@ Refr.: Má roztomilá Maruško, pojď si se mnou na lůžko, má roztomilá Maru
 
 2. [:Z drahi paradnica, z poľa robotnica,:][:bo ja taka čarna šej, haj, bo ja taka čarna šej, haj, bo ja taka čarna jak čarna čarnica.:]
 
-3. [:Čarna ja, čarna ja, jak čarna čarnica,:][:bo ja od maľučka šej, haj, bo ja od maľučka šej, haj, bo ja od maľučka na poľo chodzila.:]
+3. [:Čarna ja, čarna ja, jak čarna čarnica,:][:bo ja od maľučka šej, haj, bo ja od maľučka šej, haj, bo ja od maľučka na poľo chodzivala.:]
 
 4. [:A ja taka bila, jak bila ľeľija,:][:ani ja tu ňemam, śej, haj, ani ja tu ňemam, śej, haj, ani ja tu ňemam na dzeku frajira.:]`
   },
