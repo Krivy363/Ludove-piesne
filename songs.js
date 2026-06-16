@@ -582,7 +582,7 @@ Refr.: Má roztomilá Maruško, pojď si se mnou na lůžko, má roztomilá Maru
 
 3. Ešte sa ten kameň vo vode obráti, [:ale moja mladosť, ale moja mladosť už sa nenavráti.:]
 
-4. Mladosť moja, mladosť, vyšlas mi na márnosť, [:vyšlas mi na márnosť, vyšlas mi na márnosť pre moju nedbalosť.:]`
+4. Mladosť moja, mladosť, vyšlas mi na márnosť, [:a to všetko preto, a to všetko preto, pre moju nedbalosť.:]`
   },
   {
     id: '53',
