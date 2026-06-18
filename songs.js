@@ -1104,12 +1104,12 @@ R: Očko mala len jedno, aj na tom mala beľmo, vlasy mala sivé, nohy mala kriv
   },
   {
     id: '104',
-    nazov: "Ty falešná frajírko",
-    text: `1. Ty falešná frajírko, ty falešná frajírko, [:cos mi včera večer, cos mi včera večer, cos mi dala za pírko.:]
+    nazov: "Tys falešná frajírko",
+    text: `1. Tys falešná frajírko, tys falešná frajírko, [:cos mi včera večer, cos mi včera večer, cos mi dala za pírko.:]
 
 2. Nech si také pírečko, nech si také pírečko, [:když mám nadevšecko, když mám nadevšecko, když mám radší vínečko.:]
 
-3. Nebudeme vodu pít, nebudeme vodu pít, [:ale dobré vínko moja Kateřinko, budeme si dobře žít.:]`
+3. Nebudeme vodu pít, nebudeme vodu pít, [:ale dobré vínko milá Kateřinko, budeme si dobře žít.:]`
   },
   {
     id: '105',
