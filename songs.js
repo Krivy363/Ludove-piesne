@@ -852,11 +852,11 @@ Hej! Tečie voda zhora, bystrá je ako ja, točí sa okolo, okolo javora. Tečie
   {
     id: '78',
     nazov: "Keď som išiel išiel",
-    text: `1. Keď som išiel, išiel, z nohavíc mi vyšiel ručníček vyšívaný. Ľudia sa mi smiali, že mám taký malý ručníček vyšívaný.
+    text: `1. Keď som išiel, išiel, z nohavíc mi vyšiel ručníček vyšívaný. Všetci sa mi smiali, že mám taký malý ručníček vyšívaný.
 
 R: Očko mala len jedno, aj na tom mala beľmo, vlasy mala sivé, nohy mala krivé, zuba ani jedného.
 
-2. Keď som bol v Šarišustretol som Marišuhneď sa mi zapáčila, ale šumna bolavíno rada pilabol som s ňou dnes z večera.
+2. Keď som bol v Šarišu stretol som Marišu hneď sa mi zapáčila, ale šumna bola víno rada pila bol som s ňou dnes z večera.
 
 R: Očko mala len jedno, aj na tom mala beľmo, vlasy mala sivé, nohy mala krivé, zuba ani jedného.`
   },
@@ -1029,7 +1029,7 @@ R: Očko mala len jedno, aj na tom mala beľmo, vlasy mala sivé, nohy mala kriv
 
 3. [:Tam, pod Tatrami v slovenskej zemi, hroby sú hlboko vykopané. :] [:Nad nimi zaplače nejedno dievča, ktoré tam stojí opustené.:] 
 
-4. [:Andulko moja, jak sme sa verne, jak sme sa verne milovali. :] [:Tam, pod Tatrami, v slovenskej zemi tvoj miláčik je pochovaný.:] `
+4. [:Anička moja, jak sme sa verne, jak sme sa verne milovali. :] [:Tam, pod Tatrami, v slovenskej zemi tvoj miláčik je pochovaný.:] `
   },
   {
     id: '96',
@@ -1047,7 +1047,8 @@ R: Očko mala len jedno, aj na tom mala beľmo, vlasy mala sivé, nohy mala kriv
 
 2. Cesta je zarúbaná, šarvanci po nej idú, [:oravské staré baby bačkory nosiť budú.:]
 
-3. Hrach sa nám neurodil, len taký maľučičký, [:nechcem ja staré baby, len mladé nevestičky.:] 
+3. Hrach sa nám neurodil, len taký maľučičký, [:nechcem ja staré baby, len mladé nevestičky.:]
+
 4. Dneska som na doline, zajtra som v cintoríne, [:dneska mi hudci hudú, zajtra ma vešať budú.:] `
   },
   {
@@ -1058,7 +1059,7 @@ R: Očko mala len jedno, aj na tom mala beľmo, vlasy mala sivé, nohy mala kriv
 2. A v piatok, Anička moja, ty budeš ženička moja, [:v sobotu ručku dáš, v nedeľu pôjdeme na sobáš.:] 
 
 3. Čia si, Anička, čia, otcova či materina, [:Čia som, tvoja som, otcova i materina som.:] `
-  },
+},
 {
     id: '99',
     nazov: "A keď bolo trištvrte na jednu",
